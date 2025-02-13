@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "401267632383",
+    "project_id": "task-ec85a",
+    "storage_bucket": "task-ec85a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:401267632383:android:a2e37f48815eb1203804ca",
+        "android_client_info": {
+          "package_name": "com.example.googletaskproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARpwFKTH2IMPZhYvDz0az33jP7UBqsVcI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

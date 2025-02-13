@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Task-Tracker</string>
+
+    <string name="permission_explain_calendar">Please accept permission to perform function</string>
+    <string name="ok">OK</string>
+    <string name="settings">Setting</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+
+</resources>
