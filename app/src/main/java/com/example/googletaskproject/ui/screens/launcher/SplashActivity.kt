@@ -21,6 +21,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
             } else {
                 startActivity(Intent(this, SignInActivity::class.java))
             }
+            finish()
         }, 1000)
 
     }

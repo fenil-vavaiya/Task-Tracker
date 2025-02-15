@@ -3,7 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
 
     <application
         android:name=".core.app.MainApplication"
@@ -14,8 +20,29 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TaskTracker"
+        android:theme="@style/Theme.MyCalender.one"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.screens.alwaysondisplay.AlwaysOnDisplayActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".ui.screens.home.DayEventActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.screens.setting.TaskMusicActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.screens.setting.TimeZoneActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.screens.setting.SettingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.screens.launcher.SplashActivity"
             android:exported="true"
@@ -26,16 +53,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.screens.auth.SignInActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ui.screens.home.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
+        <receiver
+            android:name=".utils.receiver.EventAlarmReceiver"
+            android:exported="false" />
+
+        <service
+            android:name=".background.OverlayService"
+            android:exported="true"
+            android:foregroundServiceType="specialUse" />
     </application>
 
 </manifest>

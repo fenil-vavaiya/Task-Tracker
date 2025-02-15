@@ -11,8 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
 import com.example.googletaskproject.R
 import com.permissionx.guolindev.PermissionX
-import com.permissionx.guolindev.callback.ExplainReasonCallback
-import com.permissionx.guolindev.callback.ForwardToSettingsCallback
 import com.permissionx.guolindev.callback.RequestCallback
 import com.permissionx.guolindev.request.ExplainScope
 import com.permissionx.guolindev.request.ForwardScope
@@ -26,7 +24,7 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        this.enableEdgeToEdge()
         _binding = inflateBinding(layoutInflater)
         setContentView(binding.root)
         initViews(binding.root)

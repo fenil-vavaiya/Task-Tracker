@@ -6,5 +6,28 @@
     <color name="extraLightGrey">#F5F5F5</color>
     <color name="darkGrey">#5A5A5A</color>
     <color name="extraLightBlue2">#EEF6FF</color>
+    <color name="light_gray">#336A6A6A</color>
 
+    <color name="Theme1BgColor">#171E2E</color>
+    <color name="Theme1ThemeColor">#9E63FF</color>
+    <color name="Theme1ThemeAlpha">#339E63FF</color>
+    <color name="Theme1borderBgColor">#1A9E63FF</color>
+    <color name="Theme1SecondaryColor">#5E6372</color>
+    <color name="Theme1SubBgColor">#32394C</color>
+    <color name="Theme1DrawerBg">#222C42</color>
+    <color name="Theme1FontOutlineColor">#757A8A</color>
+    <color name="Theme1TaskColor">#FFAB09</color>
+    <color name="Theme1pcSyncColor">#1D92FF</color>
+    <color name="Theme1EventColor">#FF7373</color>
+    <color name="Theme1BirthdayColor">#FF1167</color>
+    <color name="Theme1HolidaysColor">#00B87E</color>
+    <color name="ThemeShape1color1">#80FF5C30</color>
+    <color name="ThemeShape1color2">#1AFFFFFF</color>
+    <color name="ThemeShape2color1">#8012DBCD</color>
+    <color name="ThemeShape2color2">#1AFFFFFF</color>
+    <color name="ThemeShape3color1">#800CB6F6</color>
+    <color name="ThemeShape3color2">#1AFFFFFF</color>
+    <color name="ThemeShape4color1">#80FF3083</color>
+    <color name="ThemeShape4color2">#1AFFFFFF</color>
+    <color name="bgColor">#DCCCFF</color>
 </resources>

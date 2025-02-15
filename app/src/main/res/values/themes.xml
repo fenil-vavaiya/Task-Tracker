@@ -3,7 +3,50 @@
     <style name="Base.Theme.TaskTracker" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:windowLightStatusBar">true</item>
+
     </style>
 
-    <style name="Theme.TaskTracker" parent="Base.Theme.TaskTracker" />
+
+    <style name="Theme.MyCalender.one" parent="Base.Theme.TaskTracker">
+        <item name="editTextStyle">@style/Widget.AppCompat.EditText</item>
+        <item name="bgColor">@color/Theme1BgColor</item>
+        <item name="themeColor">@color/Theme1ThemeColor</item>
+        <item name="iconColor">@color/white</item>
+        <item name="TxtColor">@color/white</item>
+        <item name="fontOutlineColor">@color/Theme1FontOutlineColor</item>
+        <item name="SecondaryColor">@color/Theme1SecondaryColor</item>
+        <item name="SubBgColor">@color/Theme1SubBgColor</item>
+        <item name="monthNameColor">@color/Theme1SecondaryColor</item>
+        <item name="todayMonthNameColor">@color/Theme1ThemeColor</item>
+        <item name="SimpleDayColor">@color/white</item>
+        <item name="DayNameTxtColor">@color/white</item>
+        <item name="TodayDateColor">@color/Theme1ThemeColor</item>
+        <item name="WeekendTxtColor">@color/Theme1ThemeColor</item>
+        <item name="TodayDateBgColor">@color/Theme1ThemeAlpha</item>
+        <item name="TaskColor">@color/Theme1TaskColor</item>
+        <item name="EventColor">@color/Theme1EventColor</item>
+        <item name="BirthdayColor">@color/Theme1BirthdayColor</item>
+        <item name="HolidaysColor">@color/Theme1HolidaysColor</item>
+        <item name="pcSyncColor">@color/Theme1pcSyncColor</item>
+        <item name="android:statusBarColor">@color/Theme1BgColor</item>
+        <item name="DrawerBgColor">@color/Theme1DrawerBg</item>
+        <item name="ThemeIconColor">@color/white</item>
+        <item name="BorderColor">@color/Theme1FontOutlineColor</item>
+        <item name="BorderBgColor">@color/Theme1SubBgColor</item>
+        <item name="shape1color1">@color/ThemeShape1color1</item>
+        <item name="shape1color2">@color/ThemeShape1color2</item>
+        <item name="shape2color1">@color/ThemeShape2color1</item>
+        <item name="shape2color2">@color/ThemeShape2color2</item>
+        <item name="shape3color1">@color/ThemeShape3color1</item>
+        <item name="shape3color2">@color/ThemeShape3color2</item>
+        <item name="shape4color1">@color/ThemeShape4color1</item>
+        <item name="shape4color2">@color/ThemeShape4color2</item>
+<!--        <item name="rippleRounded">@drawable/ripple_rect_light</item>-->
+
+
+    </style>
+
 </resources>

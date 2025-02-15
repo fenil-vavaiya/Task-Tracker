@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="mediumText12">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
+    <style name="mediumText10">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_10ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
+    <style name="mediumText14">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
+    <style name="mediumText16">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_16ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
+    <style name="mediumText18">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_18ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
+    <style name="mediumText20">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_20ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
+    <style name="regularText12">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+    </style>
+
+    <style name="regularText10">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_10ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+    </style>
+
+    <style name="regularText14">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+    </style>
+
+    <style name="regularText16">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_16ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+    </style>
+
+    <style name="regularText18">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_18ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+    </style>
+
+    <style name="regularText20">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_20ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+    </style>
+
+    <style name="boldText12">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_bold</item>
+    </style>
+
+    <style name="boldText10">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_10ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_bold</item>
+    </style>
+
+    <style name="boldText14">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_bold</item>
+    </style>
+
+    <style name="boldText16">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_16ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_bold</item>
+    </style>
+
+    <style name="boldText18">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_18ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_bold</item>
+    </style>
+
+    <style name="boldText20">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_20ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_bold</item>
+    </style>
+
+    <style name="rippleButton">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?android:attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="roundRippleButton">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">@drawable/ripple_round</item>
+    </style>
+
+
+</resources>

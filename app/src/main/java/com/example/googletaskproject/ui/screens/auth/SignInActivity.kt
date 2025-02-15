@@ -66,6 +66,7 @@ class SignInActivity : BaseActivity<ActivitySignInBinding>() {
                         UserModel(it.displayName!!, it.email!!, it.photoUrl.toString())
                     )
                     startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+                    finish()
                 }
             } catch (e: ApiException) {
                 Toast.makeText(this, "error" + e.message, Toast.LENGTH_SHORT).show()

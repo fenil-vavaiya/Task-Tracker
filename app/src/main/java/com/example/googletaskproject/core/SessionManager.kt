@@ -4,8 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.example.googletaskproject.domain.TaskRingtoneModel
+import com.example.googletaskproject.utils.Const
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 object SessionManager {
 
@@ -33,6 +34,13 @@ object SessionManager {
         } else {
             context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         }
+        if (!getBoolean(Const.IS_SESSION_SAVED)) {
+            putString(Const.SELECTED_TIME_ZONE, "Auto (Device Time Zone)")
+            putObject(Const.RINGTONE_MUSIC,  TaskRingtoneModel("None", -1))
+
+            putBoolean(Const.IS_SESSION_SAVED, true)
+        }
+
     }
 
     /**
