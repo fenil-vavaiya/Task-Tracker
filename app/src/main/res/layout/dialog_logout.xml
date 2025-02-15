@@ -19,6 +19,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/_15sdp"
             android:fontFamily="@font/poppins_medium"
+            android:layout_marginHorizontal="@dimen/_20sdp"
             android:gravity="center"
             android:includeFontPadding="false"
             android:text="Are you sure you want to Logout?"

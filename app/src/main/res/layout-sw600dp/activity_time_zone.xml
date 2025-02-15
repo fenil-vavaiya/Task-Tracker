@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/bgColor"
+    android:orientation="vertical"
+    tools:context=".ui.screens.setting.TimeZoneActivity">
+
+    <RelativeLayout
+        android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/ActionToolBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:id="@+id/ic_Back"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:padding="@dimen/_5sdp"
+            android:src="@drawable/ic_back" />
+
+        <EditText
+            android:id="@+id/edittext_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="@dimen/_5sdp"
+            android:layout_toStartOf="@id/ic_close"
+            android:layout_toEndOf="@+id/ic_Back"
+            android:background="@android:color/transparent"
+            android:cursorVisible="true"
+            android:focusable="true"
+            android:hint="Enter city or time zone"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:textColor="?attr/TxtColor"
+            android:textColorHint="?attr/fontOutlineColor"
+            android:textSize="@dimen/_8sdp" />
+
+
+        <ImageView
+            android:id="@+id/ic_close"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:importantForAccessibility="no"
+            android:padding="@dimen/_5sdp"
+            android:src="@drawable/ic_close" />
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:alpha="0.4"
+        android:background="?attr/fontOutlineColor" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_Time_Zone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+</LinearLayout>

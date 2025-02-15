@@ -2,12 +2,15 @@ package com.example.googletaskproject.core
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowInsets
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.viewbinding.ViewBinding
 import com.example.googletaskproject.R
 import com.permissionx.guolindev.PermissionX

@@ -8,11 +8,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.icu.util.Calendar
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.Window
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.googletaskproject.R
@@ -40,6 +43,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun initViews(view: View) {
         window.statusBarColor = getColor(R.color.Theme1BgColor)
+// Ensure white status bar text in both themes
+        window.decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE // Removes LIGHT_STATUS_BAR flag
 
         val permission = listOf(Manifest.permission.READ_CALENDAR)
         requestPermissionIfNeeded(

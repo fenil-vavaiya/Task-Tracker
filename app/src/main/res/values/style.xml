@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="mediumText12">
+    <style name="mediumText6">
         <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:textSize">@dimen/_6ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
+    <style name="mediumText8">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_8ssp</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:fontFamily">@font/poppins_medium</item>
     </style>
@@ -14,6 +21,14 @@
         <item name="android:includeFontPadding">false</item>
         <item name="android:fontFamily">@font/poppins_medium</item>
     </style>
+
+    <style name="mediumText12">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
 
     <style name="mediumText14">
         <item name="android:textColor">@color/black</item>
