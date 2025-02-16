@@ -31,6 +31,7 @@ import com.example.googletaskproject.utils.CalendarHelper.sortFutureEvents
 import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.Const.TAG
 import com.example.googletaskproject.utils.extensions.scheduleEvent
+import com.example.googletaskproject.utils.extensions.showOverlayPermissionDialog
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
@@ -72,13 +73,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
                     intentService = Intent(this@MainActivity, OverlayService::class.java)
                     if (!Settings.canDrawOverlays(this)) {
-                        resultLauncher.launch(
-                            Intent(
-                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse(
-                                    "package:$packageName"
+                        showOverlayPermissionDialog {
+                            resultLauncher.launch(
+                                Intent(
+                                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse(
+                                        "package:$packageName"
+                                    )
                                 )
                             )
-                        )
+                        }
+
                     } else {
                         startService(intentService)
                     }
