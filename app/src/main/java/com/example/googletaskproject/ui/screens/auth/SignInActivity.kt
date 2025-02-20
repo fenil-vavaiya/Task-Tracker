@@ -5,14 +5,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
-import com.example.googletaskproject.ui.screens.home.MainActivity
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.databinding.ActivitySignInBinding
 import com.example.googletaskproject.domain.UserModel
+import com.example.googletaskproject.ui.screens.home.MainActivity
+import com.example.googletaskproject.ui.screens.launcher.PermissionActivity
 import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.Const.RC_SIGN_IN
 import com.example.googletaskproject.utils.Const.TAG
+import com.example.googletaskproject.utils.helper.PermissionHelper.areAllPermissionsGranted
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -65,7 +67,11 @@ class SignInActivity : BaseActivity<ActivitySignInBinding>() {
                         Const.USER_INFO,
                         UserModel(it.displayName!!, it.email!!, it.photoUrl.toString())
                     )
-                    startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+                    if (!areAllPermissionsGranted(this)) {
+                        startActivity(Intent(this, PermissionActivity::class.java))
+                    } else {
+                        startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+                    }
                     finish()
                 }
             } catch (e: ApiException) {

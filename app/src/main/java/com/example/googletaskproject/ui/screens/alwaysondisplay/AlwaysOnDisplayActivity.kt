@@ -14,8 +14,8 @@ import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.databinding.ActivityAlwaysOnDisplayBinding
 import com.example.googletaskproject.domain.UserModel
 import com.example.googletaskproject.ui.screens.home.adapter.DayEventListAdapter
-import com.example.googletaskproject.utils.CalendarHelper
-import com.example.googletaskproject.utils.CalendarHelper.filterEventsByExactDate
+import com.example.googletaskproject.utils.helper.CalendarHelper
+import com.example.googletaskproject.utils.helper.CalendarHelper.filterEventsByExactDate
 import com.example.googletaskproject.utils.Const
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

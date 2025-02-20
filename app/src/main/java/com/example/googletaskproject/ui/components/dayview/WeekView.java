@@ -35,7 +35,7 @@ import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
 import com.example.googletaskproject.R;
 import com.example.googletaskproject.domain.CalendarEvent;
 import com.example.googletaskproject.domain.modelDate;
-import com.example.googletaskproject.utils.CalendarHelper;
+import com.example.googletaskproject.utils.helper.CalendarHelper;
 import com.example.googletaskproject.utils.Const;
 
 import org.joda.time.LocalDate;

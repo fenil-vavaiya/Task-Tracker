@@ -1,4 +1,4 @@
-package com.example.googletaskproject.utils
+package com.example.googletaskproject.utils.helper
 
 import android.content.Context
 import android.database.Cursor
@@ -8,6 +8,7 @@ import com.example.googletaskproject.R
 import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.domain.CalendarEvent
 import com.example.googletaskproject.domain.DayWiseEvent
+import com.example.googletaskproject.utils.Const
 import org.joda.time.DateTimeZone
 import org.joda.time.LocalDate
 import java.text.SimpleDateFormat

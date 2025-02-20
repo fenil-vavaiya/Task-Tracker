@@ -44,8 +44,6 @@
         <item name="shape4color1">@color/ThemeShape4color1</item>
         <item name="shape4color2">@color/ThemeShape4color2</item>
 <!--        <item name="rippleRounded">@drawable/ripple_rect_light</item>-->
-
-
     </style>
 
 </resources>

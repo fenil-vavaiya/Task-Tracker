@@ -34,7 +34,7 @@ import com.example.googletaskproject.core.SessionManager;
 import com.example.googletaskproject.domain.CalendarEvent;
 import com.example.googletaskproject.domain.DayStickerModel;
 import com.example.googletaskproject.domain.UserModel;
-import com.example.googletaskproject.utils.CalendarHelper;
+import com.example.googletaskproject.utils.helper.CalendarHelper;
 import com.example.googletaskproject.utils.Const;
 
 import org.joda.time.DateTime;

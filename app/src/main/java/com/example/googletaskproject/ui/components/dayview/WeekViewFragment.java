@@ -27,7 +27,7 @@ import com.example.googletaskproject.R;
 import com.example.googletaskproject.core.SessionManager;
 import com.example.googletaskproject.domain.CalendarEvent;
 import com.example.googletaskproject.domain.UserModel;
-import com.example.googletaskproject.utils.CalendarHelper;
+import com.example.googletaskproject.utils.helper.CalendarHelper;
 import com.example.googletaskproject.utils.Const;
 
 import org.joda.time.DateTimeZone;
@@ -35,7 +35,6 @@ import org.joda.time.LocalDate;
 
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;

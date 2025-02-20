@@ -68,8 +68,6 @@ class OverlayService : Service() {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(this)
         }
-
-
     }
 
     override fun onDestroy() {

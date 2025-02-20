@@ -7,6 +7,7 @@
     <color name="darkGrey">#5A5A5A</color>
     <color name="extraLightBlue2">#EEF6FF</color>
     <color name="light_gray">#336A6A6A</color>
+    <color name="rippleColor">#4DF0F7FF</color>
 
     <color name="Theme1BgColor">#171E2E</color>
     <color name="Theme1ThemeColor">#9E63FF</color>

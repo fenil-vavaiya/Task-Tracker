@@ -8,14 +8,11 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.icu.util.Calendar
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.Window
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.googletaskproject.R
@@ -26,8 +23,8 @@ import com.example.googletaskproject.databinding.ActivityMainBinding
 import com.example.googletaskproject.domain.UserModel
 import com.example.googletaskproject.ui.components.monthview.MonthViewFragment
 import com.example.googletaskproject.ui.screens.setting.SettingActivity
-import com.example.googletaskproject.utils.CalendarHelper
-import com.example.googletaskproject.utils.CalendarHelper.sortFutureEvents
+import com.example.googletaskproject.utils.helper.CalendarHelper
+import com.example.googletaskproject.utils.helper.CalendarHelper.sortFutureEvents
 import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.Const.TAG
 import com.example.googletaskproject.utils.extensions.scheduleEvent
