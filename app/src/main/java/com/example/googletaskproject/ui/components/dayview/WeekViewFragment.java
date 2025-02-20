@@ -25,7 +25,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.googletaskproject.R;
 import com.example.googletaskproject.core.SessionManager;
-import com.example.googletaskproject.domain.CalendarEvent;
+import com.example.googletaskproject.data.CalendarEventItem;
 import com.example.googletaskproject.domain.UserModel;
 import com.example.googletaskproject.utils.helper.CalendarHelper;
 import com.example.googletaskproject.utils.Const;
@@ -183,23 +183,23 @@ public class WeekViewFragment extends Fragment implements MonthLoader.MonthChang
     }
 
     @Override
-    public List<? extends CalendarEvent> onMonthChange(int newYear, int newMonth) {
+    public List<? extends CalendarEventItem> onMonthChange(int newYear, int newMonth) {
         LocalDate StartDate = new LocalDate(newYear, newMonth, 1);
         int length = StartDate.dayOfMonth().getMaximumValue();
         LocalDate EndDate = new LocalDate(newYear, newMonth, length);
 
         UserModel userModel = SessionManager.INSTANCE.getObject(Const.USER_INFO, UserModel.class);
 
-        List<CalendarEvent> calendarEvents = CalendarHelper.INSTANCE.fetchGoogleCalendarEvents(requireActivity(), userModel.getEmail());
+        List<CalendarEventItem> calendarEventItems = CalendarHelper.INSTANCE.fetchGoogleCalendarEvents(requireActivity(), userModel.getEmail());
 
-        return CalendarHelper.INSTANCE.filterEventsByLocalDate(calendarEvents, StartDate, EndDate, DateTimeZone.getDefault());
+        return CalendarHelper.INSTANCE.filterEventsByLocalDate(calendarEventItems, StartDate, EndDate, DateTimeZone.getDefault());
     }
 
 
 
 
     @Override
-    public void onEventClick(CalendarEvent event, RectF eventRect) {
+    public void onEventClick(CalendarEventItem event, RectF eventRect) {
         Log.d(TAG, "onEventClick: event clicked on day view");
 
     }

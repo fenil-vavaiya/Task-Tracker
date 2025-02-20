@@ -4,7 +4,10 @@ plugins {
 
     alias(libs.plugins.google.services)
 
+    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
 
+    id("kotlin-parcelize")
 }
 
 android {
@@ -30,11 +33,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         viewBinding = true
@@ -76,6 +79,29 @@ dependencies {
     implementation("joda-time:joda-time:2.12.7")
 
     implementation (libs.glide)
+
+    // Hilt Dependencies
+    implementation("com.google.dagger:hilt-android:2.50")
+    kapt("com.google.dagger:hilt-compiler:2.50")
+
+    // Hilt with Navigation (For Fragments)
+    implementation("androidx.hilt:hilt-navigation-fragment:1.0.0")
+
+    // ViewModel & LiveData
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+
+    // Activity KTX (For ViewModel delegation)
+    implementation("androidx.activity:activity-ktx:1.8.2")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.6.0")
+    kapt("androidx.room:room-compiler:2.6.0")
+
+    // Kotlin Extensions and Coroutines support for Room
+    implementation("androidx.room:room-ktx:2.6.0")
+
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
 
 
 }

@@ -6,7 +6,7 @@ import android.provider.CalendarContract
 import androidx.core.database.getIntOrNull
 import com.example.googletaskproject.R
 import com.example.googletaskproject.core.SessionManager
-import com.example.googletaskproject.domain.CalendarEvent
+import com.example.googletaskproject.data.CalendarEventItem
 import com.example.googletaskproject.domain.DayWiseEvent
 import com.example.googletaskproject.utils.Const
 import org.joda.time.DateTimeZone
@@ -19,7 +19,7 @@ import java.util.TimeZone
 
 object CalendarHelper {
 
-    fun getDayWiseEvents(events: List<CalendarEvent>): Map<String, List<CalendarEvent>> {
+    fun getDayWiseEvents(events: List<CalendarEventItem>): Map<String, List<CalendarEventItem>> {
         val groupedEvents = events.groupBy { event ->
             val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
             sdf.format(Date(event.startTime))
@@ -27,7 +27,7 @@ object CalendarHelper {
         return groupedEvents
     }
 
-    fun prepareSectionedList(dayWiseMap: Map<String, List<CalendarEvent>>): List<DayWiseEvent> {
+    fun prepareSectionedList(dayWiseMap: Map<String, List<CalendarEventItem>>): List<DayWiseEvent> {
         val sectionedList = mutableListOf<DayWiseEvent>()
 
         dayWiseMap.forEach { (date, events) ->
@@ -39,8 +39,8 @@ object CalendarHelper {
         return sectionedList
     }
 
-    fun fetchGoogleCalendarEvents(context: Context, email: String): List<CalendarEvent> {
-        val eventsList = mutableListOf<CalendarEvent>()
+    fun fetchGoogleCalendarEvents(context: Context, email: String): List<CalendarEventItem> {
+        val eventsList = mutableListOf<CalendarEventItem>()
 
         val projection = arrayOf(
             CalendarContract.Events._ID,
@@ -88,7 +88,7 @@ object CalendarHelper {
                     it.getIntOrNull(it.getColumnIndexOrThrow(CalendarContract.Events.EVENT_COLOR))
 
                 eventsList.add(
-                    CalendarEvent(
+                    CalendarEventItem(
                         eventId = eventId ?: 0,
                         title = title,
                         description = description ?: "",
@@ -123,14 +123,14 @@ object CalendarHelper {
     }
 
     fun filterEventsForTimePeriod(
-        events: List<CalendarEvent>, startTime: Long, endTime: Long
-    ): List<CalendarEvent> {
+        events: List<CalendarEventItem>, startTime: Long, endTime: Long
+    ): List<CalendarEventItem> {
         return events.filter { event ->
             (event.startTime in startTime..endTime) || (event.endTime in startTime..endTime) || (event.startTime < startTime && event.endTime > endTime) // Full overlap case
         }.sortedBy { it.startTime } // Sort by start time
     }
 
-    fun sortFutureEvents(eventsList: List<CalendarEvent>): List<CalendarEvent> {
+    fun sortFutureEvents(eventsList: List<CalendarEventItem>): List<CalendarEventItem> {
         val currentTime = System.currentTimeMillis()
 
         return eventsList
@@ -152,9 +152,9 @@ object CalendarHelper {
              .sortedBy { it.startTime } // Sort by start time in ascending order
      }*/
     fun filterEventsByExactDate(
-        events: List<CalendarEvent>,
+        events: List<CalendarEventItem>,
         targetDate: LocalDate
-    ): List<CalendarEvent> {
+    ): List<CalendarEventItem> {
         return events.filter { event ->
             val eventDate = LocalDate(event.startTime, DateTimeZone.getDefault()) // Extract only date
             eventDate == targetDate // Only include events for the exact date
@@ -162,11 +162,11 @@ object CalendarHelper {
     }
 
     fun filterEventsByLocalDate(
-        events: List<CalendarEvent>,
+        events: List<CalendarEventItem>,
         startDate: LocalDate,
         endDate: LocalDate,
         timeZone: DateTimeZone = DateTimeZone.getDefault() // Use system default timezone
-    ): List<CalendarEvent> {
+    ): List<CalendarEventItem> {
         val startTime = startDate.toDateTimeAtStartOfDay(timeZone).millis
         val endTime =
             endDate.plusDays(1).toDateTimeAtStartOfDay(timeZone).millis // Include full last day

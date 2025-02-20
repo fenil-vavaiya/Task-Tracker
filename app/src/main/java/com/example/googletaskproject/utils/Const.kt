@@ -1,6 +1,11 @@
 package com.example.googletaskproject.utils
 
 object Const {
+
+    const val TABLE_NAME = "event_table"
+    const val DATABASE_NAME = "event_db"
+
+
     const val DATA = "data"
     const val NOTIFICATION_CHANNEL_ID = "Task-Reminder"
     const val RINGTONE_MUSIC = "ringtoneMusic"

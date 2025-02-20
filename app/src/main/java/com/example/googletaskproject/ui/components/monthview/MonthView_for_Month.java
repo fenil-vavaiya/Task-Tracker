@@ -31,7 +31,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.googletaskproject.R;
 import com.example.googletaskproject.core.SessionManager;
-import com.example.googletaskproject.domain.CalendarEvent;
+import com.example.googletaskproject.data.CalendarEventItem;
 import com.example.googletaskproject.domain.DayStickerModel;
 import com.example.googletaskproject.domain.UserModel;
 import com.example.googletaskproject.utils.helper.CalendarHelper;
@@ -53,7 +53,7 @@ public class MonthView_for_Month extends View {
     private static final String TAG = Const.INSTANCE.TAG;
     private Context context;
     private Calendar calendar;
-    private List<CalendarEvent> events = new ArrayList<>();
+    private List<CalendarEventItem> events = new ArrayList<>();
     private List<DayStickerModel> dayStickerList = new ArrayList<>();
     private TextPaint textPaint, DatePaint, TaskTxtPaint;
     private Paint eventPaint;
@@ -191,9 +191,9 @@ public class MonthView_for_Month extends View {
             LocalDate maxTime = new LocalDate(calendar.getTimeInMillis()).dayOfMonth().withMaximumValue();
             UserModel userModel = SessionManager.INSTANCE.getObject(Const.USER_INFO, UserModel.class);
 
-            List<CalendarEvent> calendarEvents = CalendarHelper.INSTANCE.fetchGoogleCalendarEvents(context, userModel.getEmail());
+            List<CalendarEventItem> calendarEventItems = CalendarHelper.INSTANCE.fetchGoogleCalendarEvents(context, userModel.getEmail());
 
-            events = CalendarHelper.INSTANCE.filterEventsByLocalDate(calendarEvents, minTime, maxTime, DateTimeZone.getDefault());
+            events = CalendarHelper.INSTANCE.filterEventsByLocalDate(calendarEventItems, minTime, maxTime, DateTimeZone.getDefault());
 
             invalidate();
         }
@@ -325,10 +325,10 @@ public class MonthView_for_Month extends View {
         }
 
         // Separate multi-day and single-day events
-        List<CalendarEvent> multiDayEvents = new ArrayList<>();
-        List<CalendarEvent> singleDayEvents = new ArrayList<>();
+        List<CalendarEventItem> multiDayEvents = new ArrayList<>();
+        List<CalendarEventItem> singleDayEvents = new ArrayList<>();
 
-        for (CalendarEvent event : events) {
+        for (CalendarEventItem event : events) {
             Calendar calendarStart = Calendar.getInstance();
             calendarStart.setTimeInMillis(event.getStartTime());
             calendarStart.setTimeZone(timeZone);
@@ -349,7 +349,7 @@ public class MonthView_for_Month extends View {
         }
 
 // Process multi-day events first
-        for (CalendarEvent event : multiDayEvents) {
+        for (CalendarEventItem event : multiDayEvents) {
             Calendar calendar1 = Calendar.getInstance();
             calendar1.setTimeInMillis(event.getStartTime());
             if (calendar1.get(Calendar.DAY_OF_MONTH) == day) {
@@ -408,7 +408,7 @@ public class MonthView_for_Month extends View {
         }
 
 // Process single-day events next
-        for (CalendarEvent event : singleDayEvents) {
+        for (CalendarEventItem event : singleDayEvents) {
             Calendar calendar1 = Calendar.getInstance();
             calendar1.setTimeInMillis(event.getStartTime());
             if (calendar1.get(Calendar.DAY_OF_MONTH) == day) {
@@ -652,7 +652,7 @@ public class MonthView_for_Month extends View {
                 eventPaint);
     }
 
-    private void drawEventName(Canvas canvas, CalendarEvent event, int col, int cellWidth, float eventIndicatorY) {
+    private void drawEventName(Canvas canvas, CalendarEventItem event, int col, int cellWidth, float eventIndicatorY) {
 
 
         String eventTitle = event.getTitle();
@@ -693,7 +693,7 @@ public class MonthView_for_Month extends View {
     }
 
 
-    private boolean isMultiDayEvent(CalendarEvent event, Calendar calendarStart, Calendar calendarEnd) {
+    private boolean isMultiDayEvent(CalendarEventItem event, Calendar calendarStart, Calendar calendarEnd) {
         return !new LocalDate(calendarStart.getTimeInMillis()).equals(new LocalDate(calendarEnd.getTimeInMillis()));
 
     }

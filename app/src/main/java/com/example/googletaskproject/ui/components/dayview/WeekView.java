@@ -33,7 +33,7 @@ import androidx.core.view.ViewCompat;
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
 
 import com.example.googletaskproject.R;
-import com.example.googletaskproject.domain.CalendarEvent;
+import com.example.googletaskproject.data.CalendarEventItem;
 import com.example.googletaskproject.domain.modelDate;
 import com.example.googletaskproject.utils.helper.CalendarHelper;
 import com.example.googletaskproject.utils.Const;
@@ -164,13 +164,13 @@ public class WeekView extends View {
     private EmptyViewClickListener mEmptyViewClickListener;
     private EmptyViewLongPressListener mEmptyViewLongPressListener;
     private final Map<RectF, Calendar> dayLabelRect1 = new HashMap<>();
-    private List<? extends CalendarEvent> mPreviousPeriodEvents;
-    private List<? extends CalendarEvent> mCurrentPeriodEvents;
-    private List<? extends CalendarEvent> mNextPeriodEvents;
+    private List<? extends CalendarEventItem> mPreviousPeriodEvents;
+    private List<? extends CalendarEventItem> mCurrentPeriodEvents;
+    private List<? extends CalendarEventItem> mNextPeriodEvents;
 
     boolean isInEvent = false;
     boolean isInTask = false;
-    CalendarEvent selectedEvent;
+    CalendarEventItem selectedEvent;
     RectF eventRect, taskRect;
     int TaskColor;
     private final GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
@@ -1358,12 +1358,12 @@ public class WeekView extends View {
     }
 
     public interface EventClickListener {
-        void onEventClick(CalendarEvent event, RectF eventRect);
+        void onEventClick(CalendarEventItem event, RectF eventRect);
 
     }
 
     public interface EventLongPressListener {
-        void onEventLongPress(CalendarEvent event, RectF eventRect);
+        void onEventLongPress(CalendarEventItem event, RectF eventRect);
     }
 
     public interface EmptyViewClickListener {
@@ -1397,9 +1397,9 @@ public class WeekView extends View {
             int periodToFetch = (int) mWeekViewLoader.toWeekViewPeriodIndex(day);
 
             if (!isInEditMode() && (mFetchedPeriod < 0 || mFetchedPeriod != periodToFetch || mRefreshEvents)) {
-                List<? extends CalendarEvent> previousPeriodEvents = null;
-                List<? extends CalendarEvent> currentPeriodEvents = null;
-                List<? extends CalendarEvent> nextPeriodEvents = null;
+                List<? extends CalendarEventItem> previousPeriodEvents = null;
+                List<? extends CalendarEventItem> currentPeriodEvents = null;
+                List<? extends CalendarEventItem> nextPeriodEvents = null;
 
                 if (mPreviousPeriodEvents != null && mCurrentPeriodEvents != null && mNextPeriodEvents != null) {
                     if (periodToFetch == mFetchedPeriod - 1) {
@@ -1659,13 +1659,13 @@ public class WeekView extends View {
         return !((start1 >= end2) || (end1 <= start2));
     }
 
-    private void sortAndCacheEvents(List<? extends CalendarEvent> events) {
-        for (CalendarEvent event : events) {
+    private void sortAndCacheEvents(List<? extends CalendarEventItem> events) {
+        for (CalendarEventItem event : events) {
             cacheEvent(event);
         }
     }
 
-    private void cacheEvent(CalendarEvent event) {
+    private void cacheEvent(CalendarEventItem event) {
 
         Calendar calendar1 = Calendar.getInstance();
         calendar1.setTimeInMillis(event.getStartTime());
@@ -1674,15 +1674,15 @@ public class WeekView extends View {
         calendar2.setTimeInMillis(event.getEndTime());
 
         if (!CalendarHelper.INSTANCE.isSameDay(calendar1, calendar2)) {
-            CalendarEvent event1 = new CalendarEvent(event.getEventId(), event.getTitle(), event.getDescription(), event.getStartTime(), event.getEndTime(), event.getAllDay(), event.getCalendarId(), event.getLocation(), event.getEventColor());
-            CalendarEvent event2 = new CalendarEvent(event.getEventId(), event.getTitle(), event.getDescription(), event.getStartTime(), event.getEndTime(), event.getAllDay(), event.getCalendarId(), event.getLocation(), event.getEventColor()); // Null for minutes initially
+            CalendarEventItem event1 = new CalendarEventItem(event.getEventId(), event.getTitle(), event.getDescription(), event.getStartTime(), event.getEndTime(), event.getAllDay(), event.getCalendarId(), event.getLocation(), event.getEventColor());
+            CalendarEventItem event2 = new CalendarEventItem(event.getEventId(), event.getTitle(), event.getDescription(), event.getStartTime(), event.getEndTime(), event.getAllDay(), event.getCalendarId(), event.getLocation(), event.getEventColor()); // Null for minutes initially
 
             mEventRectS.add(new EventRect(event1, null));
             mEventRectS.add(new EventRect(event2, null));
         } else mEventRectS.add(new EventRect(event, null));
     }
 
-    private void drawEventTitle(CalendarEvent event, RectF rect, Canvas canvas) {
+    private void drawEventTitle(CalendarEventItem event, RectF rect, Canvas canvas) {
         mEventTextPaint.setColor(event.getEventColor());
         float margin = 5f;
         float textSize = mEventTextPaint.getTextSize();
@@ -1915,7 +1915,7 @@ public class WeekView extends View {
     }
 
     private static class EventRect {
-        public CalendarEvent event;
+        public CalendarEventItem event;
         public RectF rectF;
         public float left;
 
@@ -1923,7 +1923,7 @@ public class WeekView extends View {
         public float top;
         public float bottom;
 
-        public EventRect(CalendarEvent event, RectF rectF) {
+        public EventRect(CalendarEventItem event, RectF rectF) {
             this.event = event;
             this.rectF = rectF;
         }

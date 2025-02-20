@@ -1,6 +1,6 @@
 package com.example.googletaskproject.ui.components.dayview;
 
-import com.example.googletaskproject.domain.CalendarEvent;
+import com.example.googletaskproject.data.CalendarEventItem;
 
 import java.util.Calendar;
 import java.util.List;
@@ -19,13 +19,13 @@ public class MonthLoader implements WeekViewLoader {
     }
 
     @Override
-    public List<? extends CalendarEvent> onLoad(int periodIndex) {
+    public List<? extends CalendarEventItem> onLoad(int periodIndex) {
         return mOnMonthChangeListener.onMonthChange(periodIndex / 12, periodIndex % 12 + 1);
     }
 
 
     public interface MonthChangeListener {
-        List<? extends CalendarEvent> onMonthChange(int newYear, int newMonth);
+        List<? extends CalendarEventItem> onMonthChange(int newYear, int newMonth);
     }
 
 

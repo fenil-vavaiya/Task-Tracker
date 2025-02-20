@@ -6,15 +6,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.googletaskproject.R
 import com.example.googletaskproject.databinding.ItemEventWindowBinding
-import com.example.googletaskproject.databinding.ItemReminderListEventBinding
-import com.example.googletaskproject.domain.CalendarEvent
+import com.example.googletaskproject.data.CalendarEventItem
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class DayEventWindowAdapter(
-    private val dataLIst: List<CalendarEvent>,
-    private val callback: (CalendarEvent) -> Unit
+    private val dataLIst: List<CalendarEventItem>,
+    private val callback: (CalendarEventItem) -> Unit
 ) :
     RecyclerView.Adapter<DayEventWindowAdapter.DayEventListViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayEventListViewHolder {
@@ -33,7 +32,7 @@ class DayEventWindowAdapter(
 
     inner class DayEventListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = ItemEventWindowBinding.bind(itemView)
-        fun bind(item: CalendarEvent) {
+        fun bind(item: CalendarEventItem) {
             binding.reminderName.text = item.title
             binding.reminderTime.text = convertTimestampToTime(item.startTime)
 
