@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.googletaskproject.R;
+import com.example.googletaskproject.data.CalendarEventItem;
 
 import java.util.ArrayList;
 import java.util.Calendar;

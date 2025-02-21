@@ -1,4 +1,4 @@
-package com.example.calculatorapp.data.local.db
+package com.example.googletaskproject.data.local.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

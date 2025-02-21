@@ -2,76 +2,61 @@ package com.example.googletaskproject.core
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import com.example.googletaskproject.domain.TaskRingtoneModel
 import com.example.googletaskproject.utils.Const
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 object SessionManager {
 
-    private const val PREF_NAME = "app_preferences"
+    private const val PREF_NAME = "MyPref"
     private lateinit var sharedPreferences: SharedPreferences
+    lateinit var editor: SharedPreferences.Editor
     private val gson = Gson()
-
 
     /**
      * Initialize SharedPreferences (call this in Application class)
      */
+    fun init(context: Context) {
+        sharedPreferences = context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        editor = sharedPreferences.edit()
 
-    fun init(context: Context, useEncryption: Boolean = true) {
-        sharedPreferences = if (useEncryption) {
-            val masterKey = MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-            EncryptedSharedPreferences.create(
-                context,
-                PREF_NAME,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-        } else {
-            context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        }
         if (!getBoolean(Const.IS_SESSION_SAVED)) {
             putString(Const.SELECTED_TIME_ZONE, "Auto (Device Time Zone)")
-            putObject(Const.RINGTONE_MUSIC,  TaskRingtoneModel("None", -1))
-
+            putObject(Const.RINGTONE_MUSIC, TaskRingtoneModel("None", -1))
             putBoolean(Const.IS_SESSION_SAVED, true)
         }
-
     }
 
     /**
      * Save data asynchronously
      */
-
     fun putString(key: String, value: String) {
-        sharedPreferences.edit().putString(key, value).apply()
+        editor.putString(key, value).apply()
     }
 
     fun putInt(key: String, value: Int) {
-        sharedPreferences.edit().putInt(key, value).apply()
+        editor.putInt(key, value).apply()
     }
 
     fun putBoolean(key: String, value: Boolean) {
-        sharedPreferences.edit().putBoolean(key, value).apply()
+        editor.putBoolean(key, value).apply()
     }
 
     fun putLong(key: String, value: Long) {
-        sharedPreferences.edit().putLong(key, value).apply()
+        editor.putLong(key, value).apply()
     }
 
     fun <T> putObject(key: String, obj: T) {
         val json = gson.toJson(obj)
-        sharedPreferences.edit().putString(key, json).apply()
+        editor.putString(key, json).apply()
     }
-
+    inline fun <reified T> putList(key: String, list: List<T>) {
+        editor.putString(key, Gson().toJson(list)).apply()
+    }
     /**
      * Retrieve data with default values
      */
-
     fun getString(key: String, default: String = ""): String {
         return sharedPreferences.getString(key, default) ?: default
     }
@@ -96,17 +81,23 @@ object SessionManager {
         return gson.fromJson(json, clazz)
     }
 
+
+
+    inline fun <reified T> getList(key: String): List<T> {
+        val json = getString(key)
+        return Gson().fromJson(json, object : TypeToken<List<T>>() {}.type) ?: emptyList()
+    }
     /**
      * Remove a specific key
      */
     fun removeKey(key: String) {
-        sharedPreferences.edit().remove(key).apply()
+        editor.remove(key).apply()
     }
 
     /**
      * Clear all preferences
      */
     fun clearAll() {
-        sharedPreferences.edit().clear().apply()
+        editor.clear().apply()
     }
 }

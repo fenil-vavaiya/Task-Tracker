@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class EventRepository @Inject constructor(private val eventDao: EventDao) {
 
-    fun getAllEvent() = eventDao.getAllEvent()
+    fun getAllEvents() = eventDao.getAllEvents()
     suspend fun deleteEvent(historyItem: CalendarEventItem) = eventDao.deleteEvent(historyItem)
     suspend fun deleteAllEvent() = eventDao.deleteAllEvent()
 
@@ -19,6 +19,10 @@ class EventRepository @Inject constructor(private val eventDao: EventDao) {
         eventDao.insertEvent(
             eventItem
         )
+    }
+
+    suspend fun updateEvents(newEvents: List<CalendarEventItem>) {
+        eventDao.replaceAllEventsConcurrently(newEvents)
     }
 
 }

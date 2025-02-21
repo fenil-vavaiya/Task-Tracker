@@ -60,48 +60,45 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // auth
-    implementation("com.google.android.gms:play-services-auth:21.1.1") // Google Sign-In SDK
+    implementation(libs.play.services.auth) // Google Sign-In SDK
 
     // sdp
-    implementation("com.intuit.sdp:sdp-android:1.1.1")
-    implementation("com.intuit.ssp:ssp-android:1.1.1")
-
-    // androidx.security
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation(libs.sdp.android)
+    implementation(libs.ssp.android)
 
     // google.gson
-    implementation("com.google.code.gson:gson:2.12.1")
+    implementation(libs.google.gson)
 
     // permissionX
-    implementation("com.guolindev.permissionx:permissionx:1.8.0")
+    implementation(libs.permissionx)
 
     // joda-time
-    implementation("joda-time:joda-time:2.12.7")
+    implementation(libs.joda.time)
 
     implementation (libs.glide)
 
     // Hilt Dependencies
-    implementation("com.google.dagger:hilt-android:2.50")
-    kapt("com.google.dagger:hilt-compiler:2.50")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
     // Hilt with Navigation (For Fragments)
-    implementation("androidx.hilt:hilt-navigation-fragment:1.0.0")
+    implementation(libs.androidx.hilt.navigation.fragment)
 
     // ViewModel & LiveData
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
 
     // Activity KTX (For ViewModel delegation)
-    implementation("androidx.activity:activity-ktx:1.8.2")
+    implementation(libs.androidx.activity.ktx)
 
     // Room
-    implementation("androidx.room:room-runtime:2.6.0")
-    kapt("androidx.room:room-compiler:2.6.0")
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
 
     // Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:2.6.0")
+    implementation(libs.androidx.room.ktx)
 
-    implementation("androidx.fragment:fragment-ktx:1.8.5")
+    implementation(libs.androidx.fragment.ktx)
 
 
 }

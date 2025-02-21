@@ -10,13 +10,13 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class CalendarEventItem(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val eventId: Int,  // Google Calendar event ID
-    val title: String,
-    val description: String,
-    val startTime: Long,  // Store as timestamp (milliseconds)
-    val endTime: Long,    // Store as timestamp (milliseconds)
-    val allDay: Boolean,
-    val calendarId: String, // To differentiate calendars
+    val eventId: Int = 0,  // Google Calendar event ID
+    val title: String = "",
+    val description: String = "",
+    val startTime: Long = 0,  // Store as timestamp (milliseconds)
+    val endTime: Long = 0,    // Store as timestamp (milliseconds)
+    val allDay: Boolean = false,
+    val calendarId: String = "", // To differentiate calendars
     val location: String = "",
-    val eventColor: Int,
-): Parcelable
+    val eventColor: Int = 0,
+) : Parcelable

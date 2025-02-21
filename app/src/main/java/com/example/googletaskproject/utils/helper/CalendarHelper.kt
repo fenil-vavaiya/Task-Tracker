@@ -156,7 +156,8 @@ object CalendarHelper {
         targetDate: LocalDate
     ): List<CalendarEventItem> {
         return events.filter { event ->
-            val eventDate = LocalDate(event.startTime, DateTimeZone.getDefault()) // Extract only date
+            val eventDate =
+                LocalDate(event.startTime, DateTimeZone.getDefault()) // Extract only date
             eventDate == targetDate // Only include events for the exact date
         }.sortedBy { it.startTime } // Sort events by start time
     }

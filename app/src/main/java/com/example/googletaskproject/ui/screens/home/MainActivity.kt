@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.googletaskproject.R
@@ -21,19 +22,20 @@ import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.databinding.ActivityMainBinding
 import com.example.googletaskproject.domain.UserModel
-import com.example.googletaskproject.ui.components.monthview.MonthViewFragment
+import com.example.googletaskproject.presentation.EventViewmodel
+import com.example.googletaskproject.ui.components.monthview.MonthFragment
 import com.example.googletaskproject.ui.screens.setting.SettingActivity
-import com.example.googletaskproject.utils.helper.CalendarHelper
-import com.example.googletaskproject.utils.helper.CalendarHelper.sortFutureEvents
 import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.Const.TAG
-import com.example.googletaskproject.utils.extensions.scheduleEvent
 import com.example.googletaskproject.utils.extensions.showOverlayPermissionDialog
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     private var intentService: Intent? = null
 
+    private val viewmodel: EventViewmodel by viewModels()
 
     override fun inflateBinding(layoutInflater: LayoutInflater) =
         ActivityMainBinding.inflate(layoutInflater)
@@ -41,48 +43,29 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun initViews(view: View) {
         window.statusBarColor = getColor(R.color.Theme1BgColor)
-// Ensure white status bar text in both themes
-        window.decorView.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE // Removes LIGHT_STATUS_BAR flag
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 
         val permission = listOf(Manifest.permission.READ_CALENDAR)
         requestPermissionIfNeeded(
             permission
-        ) { allGranted, grantedList, deniedList ->
+        ) { allGranted, _, _ ->
             if (allGranted) {
 
                 val userInfo = SessionManager.getObject(Const.USER_INFO, UserModel::class.java)
                 userInfo?.let {
+
                     val calendar = Calendar.getInstance()
-                    val monthViewFragment = MonthViewFragment.newInstance(
+                    val monthFragment = MonthFragment.newInstance(
                         calendar[java.util.Calendar.YEAR], calendar[java.util.Calendar.MONTH]
                     )
-                    replaceFragment(monthViewFragment)
+                    replaceFragment(monthFragment)
 
-                    val eventsList = CalendarHelper.fetchGoogleCalendarEvents(this, userInfo.email)
-
-                    val futureEvents = sortFutureEvents(eventsList)
-
-                    Log.d(TAG, "onReceive: futureEvents = $futureEvents")
-                    futureEvents.forEach { event ->
-                        scheduleEvent(event)
+                    viewmodel.allEvents.observe(this) {
+                        Log.d(TAG, "initViews: Main Act eventsList.size = ${it?.size}")
                     }
 
-                    intentService = Intent(this@MainActivity, OverlayService::class.java)
-                    if (!Settings.canDrawOverlays(this)) {
-                        showOverlayPermissionDialog {
-                            resultLauncher.launch(
-                                Intent(
-                                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse(
-                                        "package:$packageName"
-                                    )
-                                )
-                            )
-                        }
 
-                    } else {
-                        startService(intentService)
-                    }
+//                    startOverlayService()
 
 
                 }
@@ -95,6 +78,23 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(clickReceiver, IntentFilter(Const.CLICK_EVENT))
 
+    }
+
+    private fun startOverlayService() {
+        intentService = Intent(this@MainActivity, OverlayService::class.java)
+        if (!Settings.canDrawOverlays(this)) {
+            showOverlayPermissionDialog {
+                resultLauncher.launch(
+                    Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse(
+                            "package:$packageName"
+                        )
+                    )
+                )
+            }
+        } else {
+            startService(intentService)
+        }
     }
 
     private val resultLauncher = registerForActivityResult(
@@ -118,8 +118,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
                 startActivity(
                     Intent(
-                        this@MainActivity,
-                        DayEventActivity::class.java
+                        this@MainActivity, DayEventActivity::class.java
                     ).putExtra(Const.DATA, it)
                 )
             }

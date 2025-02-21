@@ -1667,7 +1667,7 @@ public class WeekView extends View {
 
     private void cacheEvent(CalendarEventItem event) {
 
-        Calendar calendar1 = Calendar.getInstance();
+      /*  Calendar calendar1 = Calendar.getInstance();
         calendar1.setTimeInMillis(event.getStartTime());
 
         Calendar calendar2 = Calendar.getInstance();
@@ -1679,7 +1679,7 @@ public class WeekView extends View {
 
             mEventRectS.add(new EventRect(event1, null));
             mEventRectS.add(new EventRect(event2, null));
-        } else mEventRectS.add(new EventRect(event, null));
+        } else mEventRectS.add(new EventRect(event, null));*/
     }
 
     private void drawEventTitle(CalendarEventItem event, RectF rect, Canvas canvas) {

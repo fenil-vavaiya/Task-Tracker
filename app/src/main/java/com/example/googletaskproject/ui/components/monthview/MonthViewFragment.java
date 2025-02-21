@@ -10,20 +10,22 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.googletaskproject.R;
+import com.example.googletaskproject.presentation.EventViewmodel;
 import com.example.googletaskproject.utils.Const;
 
 import java.util.Calendar;
 
-
 public class MonthViewFragment extends Fragment {
 
-
+    private static final String TAG = Const.TAG;
+    private EventViewmodel viewModel;
     public MonthAdapter monthAdapter;
     RecyclerView monthListView;
     int mYear, mMonth;
@@ -40,8 +42,8 @@ public class MonthViewFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static MonthViewFragment newInstance(int Year, int Month) {
-        MonthViewFragment fragment = new MonthViewFragment();
+    public static MonthFragment newInstance(int Year, int Month) {
+        MonthFragment fragment = new MonthFragment();
         Bundle args = new Bundle();
         args.putInt("Year", Year);
         args.putInt("Month", Month);
@@ -59,13 +61,17 @@ public class MonthViewFragment extends Fragment {
             mYear = getArguments().getInt("Year");
             mMonth = getArguments().getInt("Month");
         }
+        viewModel = new ViewModelProvider(this).get(EventViewmodel.class);
+        viewModel.getAllEvents().observe(requireActivity(), calendarEventItems -> {
 
-        MonthAdapter monthAdapter2 = new MonthAdapter( );
+        });
+        MonthAdapter monthAdapter2 = new MonthAdapter(  );
         this.monthAdapter = monthAdapter2;
     }
 
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View v = layoutInflater.inflate(R.layout.fragment_month, viewGroup, false);
+
         monthListView = v.findViewById(R.id.monthListView);
         day1 = v.findViewById(R.id.day1);
         day2 = v.findViewById(R.id.day2);

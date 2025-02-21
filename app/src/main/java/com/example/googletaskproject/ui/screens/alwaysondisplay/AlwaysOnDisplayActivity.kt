@@ -8,15 +8,13 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.googletaskproject.R
-import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.databinding.ActivityAlwaysOnDisplayBinding
-import com.example.googletaskproject.domain.UserModel
+import com.example.googletaskproject.presentation.EventViewmodel
 import com.example.googletaskproject.ui.screens.home.adapter.DayEventListAdapter
-import com.example.googletaskproject.utils.helper.CalendarHelper
-import com.example.googletaskproject.utils.helper.CalendarHelper.filterEventsByExactDate
-import com.example.googletaskproject.utils.Const
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -28,11 +26,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@AndroidEntryPoint
 class AlwaysOnDisplayActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAlwaysOnDisplayBinding
     private var job: Job? = null
-
+    private val viewmodel: EventViewmodel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,17 +49,13 @@ class AlwaysOnDisplayActivity : AppCompatActivity() {
 
         binding.dateTv.text = LocalDate().toString("EEE, MMMM dd")
 
-        val userInfo = SessionManager.getObject(Const.USER_INFO, UserModel::class.java)
-
-        userInfo?.let {
-            val eventsList = CalendarHelper.fetchGoogleCalendarEvents(this, userInfo.email)
-
-            val dayEvent = filterEventsByExactDate(eventsList, LocalDate())
-
-            binding.rv.adapter = DayEventListAdapter(dayEvent) {
+        viewmodel.todayEvents.observe(this) {
+            binding.rv.adapter = DayEventListAdapter(it) {
 
             }
         }
+
+
     }
 
     private fun startUpdatingTime() {
