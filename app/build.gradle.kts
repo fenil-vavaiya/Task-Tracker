@@ -100,5 +100,17 @@ dependencies {
 
     implementation(libs.androidx.fragment.ktx)
 
+    // Firebase BoM (always use the latest version)
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+
+    // Firestore Database
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+
+
 
 }

@@ -8,7 +8,7 @@ import android.widget.Toast
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.databinding.ActivitySignInBinding
-import com.example.googletaskproject.domain.UserModel
+import com.example.googletaskproject.data.model.UserModel
 import com.example.googletaskproject.ui.screens.home.MainActivity
 import com.example.googletaskproject.ui.screens.launcher.PermissionActivity
 import com.example.googletaskproject.utils.Const

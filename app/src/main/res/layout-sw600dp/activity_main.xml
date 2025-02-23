@@ -8,60 +8,103 @@
     android:background="?attr/bgColor"
     tools:context=".ui.screens.home.MainActivity">
 
-    <LinearLayout
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
-        app:layout_constraintEnd_toEndOf="parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_100sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="UselessParent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/timeTv"
+            style="@style/mediumText20"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_medium"
-            android:gravity="center_vertical"
-            android:singleLine="true"
-            android:text="2024"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="9:01"
             android:textColor="@color/white"
-            android:textSize="@dimen/_10sdp"
-            tools:ignore="HardcodedText,TextSizeCheck" />
+            android:textSize="@dimen/_50ssp"
+            app:layout_constraintBottom_toTopOf="@+id/dateTv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/dateTv"
+            style="@style/mediumText20"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Sat, February 15"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/timeTv" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <ImageView
-            android:id="@+id/btnSetting"
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="@dimen/_20sdp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="@dimen/_1sdp"
-            android:layout_marginEnd="@dimen/_3sdp"
-            android:padding="@dimen/_3sdp"
-            android:src="@drawable/ic_setting"
-            android:visibility="visible"
-            app:tint="@color/white"
-            tools:ignore="ContentDescription" />
+    <TextView
+        android:id="@+id/btnAddTask"
+        style="@style/Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_10sdp"
+        android:text="Add Task"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/rv"
+        app:layout_constraintStart_toEndOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/btnSyncTask"
+        style="@style/Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_10sdp"
+        android:backgroundTint="@color/white"
+        android:text="Sync Task"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/btnAddTask"
+        app:layout_constraintStart_toEndOf="@+id/btnAddTask"
+        app:layout_constraintTop_toTopOf="@+id/btnAddTask" />
+
+    <ImageView
+        android:id="@+id/btnSetting"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="@dimen/_1sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:padding="@dimen/_3sdp"
+        android:src="@drawable/ic_setting"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSyncTask"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnSyncTask"
+        app:tint="@color/white"
+        tools:ignore="ContentDescription" />
 
 
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/frameLayout"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="visible"
+        android:layout_marginHorizontal="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintStart_toEndOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/btnAddTask"
+        tools:listitem="@layout/item_reminder_list_event" />
 
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.4" />
 </androidx.constraintlayout.widget.ConstraintLayout>

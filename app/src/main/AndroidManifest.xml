@@ -17,6 +17,14 @@
         android:name="android.hardware.screen.portrait"
         android:required="false" />
 
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
     <application
         android:name=".core.app.MainApplication"
         android:allowBackup="true"
@@ -29,30 +37,34 @@
         android:theme="@style/Theme.MyCalender.one"
         tools:targetApi="31">
         <activity
+            android:name=".ui.screens.home.TaskAlarmActivity"
+            android:screenOrientation="landscape"
+            android:exported="false" />
+        <activity
             android:name=".ui.screens.alwaysondisplay.AlwaysOnDisplayActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".ui.screens.home.DayEventActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.screens.setting.TaskMusicActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.screens.setting.TimeZoneActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.screens.setting.SettingActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.screens.launcher.SplashActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -62,15 +74,15 @@
         <activity
             android:name=".ui.screens.auth.SignInActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.screens.launcher.PermissionActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.screens.home.MainActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="landscape" />
 
         <receiver
             android:name=".utils.receiver.EventAlarmReceiver"
@@ -81,11 +93,5 @@
             android:exported="true"
             android:foregroundServiceType="specialUse" />
     </application>
-    <supports-screens
-        android:anyDensity="true"
-        android:largeScreens="true"
-        android:normalScreens="true"
-        android:resizeable="true"
-        android:smallScreens="true"
-        android:xlargeScreens="true" />
+
 </manifest>

@@ -4,10 +4,9 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.CalendarContract
 import androidx.core.database.getIntOrNull
-import com.example.googletaskproject.R
 import com.example.googletaskproject.core.SessionManager
-import com.example.googletaskproject.data.CalendarEventItem
-import com.example.googletaskproject.domain.DayWiseEvent
+import com.example.googletaskproject.data.model.DayWiseEvent
+import com.example.googletaskproject.data.model.TaskItem
 import com.example.googletaskproject.utils.Const
 import org.joda.time.DateTimeZone
 import org.joda.time.LocalDate
@@ -19,7 +18,7 @@ import java.util.TimeZone
 
 object CalendarHelper {
 
-    fun getDayWiseEvents(events: List<CalendarEventItem>): Map<String, List<CalendarEventItem>> {
+    fun getDayWiseEvents(events: List<TaskItem>): Map<String, List<TaskItem>> {
         val groupedEvents = events.groupBy { event ->
             val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
             sdf.format(Date(event.startTime))
@@ -27,7 +26,7 @@ object CalendarHelper {
         return groupedEvents
     }
 
-    fun prepareSectionedList(dayWiseMap: Map<String, List<CalendarEventItem>>): List<DayWiseEvent> {
+    fun prepareSectionedList(dayWiseMap: Map<String, List<TaskItem>>): List<DayWiseEvent> {
         val sectionedList = mutableListOf<DayWiseEvent>()
 
         dayWiseMap.forEach { (date, events) ->
@@ -39,8 +38,8 @@ object CalendarHelper {
         return sectionedList
     }
 
-    fun fetchGoogleCalendarEvents(context: Context, email: String): List<CalendarEventItem> {
-        val eventsList = mutableListOf<CalendarEventItem>()
+    fun fetchGoogleCalendarEvents(context: Context, email: String): List<TaskItem> {
+        val eventsList = mutableListOf<TaskItem>()
 
         val projection = arrayOf(
             CalendarContract.Events._ID,
@@ -88,16 +87,13 @@ object CalendarHelper {
                     it.getIntOrNull(it.getColumnIndexOrThrow(CalendarContract.Events.EVENT_COLOR))
 
                 eventsList.add(
-                    CalendarEventItem(
-                        eventId = eventId ?: 0,
+                    TaskItem(
+                        taskId = eventId ?: 0,
                         title = title,
                         description = description ?: "",
                         startTime = startTime,
-                        endTime = endTime,
-                        allDay = allDay,
                         calendarId = calendarId.toString(),
                         location = location ?: "",
-                        eventColor = context.getColor(R.color.Theme1EventColor)
                     )
                 )
             }
@@ -123,14 +119,14 @@ object CalendarHelper {
     }
 
     fun filterEventsForTimePeriod(
-        events: List<CalendarEventItem>, startTime: Long, endTime: Long
-    ): List<CalendarEventItem> {
+        events: List<TaskItem>, startTime: Long, endTime: Long
+    ): List<TaskItem> {
         return events.filter { event ->
-            (event.startTime in startTime..endTime) || (event.endTime in startTime..endTime) || (event.startTime < startTime && event.endTime > endTime) // Full overlap case
+            (event.startTime in startTime..endTime) || (event.taskDuration in startTime..endTime) || (event.startTime < startTime && event.taskDuration > endTime) // Full overlap case
         }.sortedBy { it.startTime } // Sort by start time
     }
 
-    fun sortFutureEvents(eventsList: List<CalendarEventItem>): List<CalendarEventItem> {
+    fun sortFutureEvents(eventsList: List<TaskItem>): List<TaskItem> {
         val currentTime = System.currentTimeMillis()
 
         return eventsList
@@ -152,9 +148,9 @@ object CalendarHelper {
              .sortedBy { it.startTime } // Sort by start time in ascending order
      }*/
     fun filterEventsByExactDate(
-        events: List<CalendarEventItem>,
+        events: List<TaskItem>,
         targetDate: LocalDate
-    ): List<CalendarEventItem> {
+    ): List<TaskItem> {
         return events.filter { event ->
             val eventDate =
                 LocalDate(event.startTime, DateTimeZone.getDefault()) // Extract only date
@@ -163,19 +159,19 @@ object CalendarHelper {
     }
 
     fun filterEventsByLocalDate(
-        events: List<CalendarEventItem>,
+        events: List<TaskItem>,
         startDate: LocalDate,
         endDate: LocalDate,
         timeZone: DateTimeZone = DateTimeZone.getDefault() // Use system default timezone
-    ): List<CalendarEventItem> {
+    ): List<TaskItem> {
         val startTime = startDate.toDateTimeAtStartOfDay(timeZone).millis
         val endTime =
             endDate.plusDays(1).toDateTimeAtStartOfDay(timeZone).millis // Include full last day
 
         return events.filter { event ->
             (event.startTime in startTime until endTime) ||
-                    (event.endTime in startTime until endTime) ||
-                    (event.startTime < startTime && event.endTime > endTime) // Full overlap case
+                    (event.taskDuration in startTime until endTime) ||
+                    (event.startTime < startTime && event.taskDuration > endTime) // Full overlap case
         }.sortedBy { it.startTime } // Sort by start time
     }
 

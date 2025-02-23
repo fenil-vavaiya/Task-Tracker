@@ -1,6 +1,5 @@
 package com.example.googletaskproject.ui.screens.setting.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,9 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.googletaskproject.R
 import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.databinding.TimeZoneLayoutBinding
-import com.example.googletaskproject.domain.TimeZoneModel
+import com.example.googletaskproject.data.model.TimeZoneModel
 import com.example.googletaskproject.utils.Const
-import java.util.TimeZone
 
 class TimeZoneAdapter() : RecyclerView.Adapter<TimeZoneAdapter.TimeZoneViewHolder>() {
     private var dataList = ArrayList<TimeZoneModel>()

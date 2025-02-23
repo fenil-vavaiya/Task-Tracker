@@ -6,7 +6,7 @@ import android.view.View
 import com.example.googletaskproject.R
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.databinding.ActivityTaskMusicBinding
-import com.example.googletaskproject.domain.TaskRingtoneModel
+import com.example.googletaskproject.data.model.TaskRingtoneModel
 import com.example.googletaskproject.ui.screens.setting.adapter.TaskMusicAdapter
 
 class TaskMusicActivity : BaseActivity<ActivityTaskMusicBinding>() {

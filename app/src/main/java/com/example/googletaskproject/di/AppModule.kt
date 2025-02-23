@@ -2,8 +2,8 @@ package com.example.googletaskproject.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.googletaskproject.data.local.db.EventDatabase
-import com.example.googletaskproject.data.CalendarEventItem
+import com.example.googletaskproject.data.local.db.TaskDatabase
+import com.example.googletaskproject.data.model.TaskItem
 import com.example.googletaskproject.utils.Const.DATABASE_NAME
 import dagger.Module
 import dagger.Provides
@@ -18,13 +18,13 @@ class AppModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context) = Room.databaseBuilder(
-        context, EventDatabase::class.java, DATABASE_NAME
+        context, TaskDatabase::class.java, DATABASE_NAME
     ).build()
     @Provides
     @Singleton
-    fun provideDao(db: EventDatabase) = db.eventDao()
+    fun provideDao(db: TaskDatabase) = db.taskDao()
 
     @Provides
     @Singleton
-    fun provideEntity() = CalendarEventItem()
+    fun provideEntity() = TaskItem()
 }

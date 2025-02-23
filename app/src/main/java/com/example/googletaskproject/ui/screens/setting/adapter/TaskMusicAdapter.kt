@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.googletaskproject.R
 import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.databinding.ItemRingtoneBinding
-import com.example.googletaskproject.domain.TaskRingtoneModel
+import com.example.googletaskproject.data.model.TaskRingtoneModel
 import com.example.googletaskproject.utils.Const
 
 class TaskMusicAdapter : RecyclerView.Adapter<TaskMusicAdapter.ViewHolder>() {

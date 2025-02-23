@@ -8,6 +8,11 @@
     <color name="extraLightBlue2">#EEF6FF</color>
     <color name="light_gray">#336A6A6A</color>
     <color name="rippleColor">#4DF0F7FF</color>
+    <color name="edittext">#ECF6FF</color>
+    <color name="chinese_black">#111111</color>
+    <color name="manatee">#9CA4AB</color>
+    <color name="negativeButton">#E6E6E6</color>
+    <color name="negativeButtonText">#888888</color>
 
     <color name="Theme1BgColor">#171E2E</color>
     <color name="Theme1ThemeColor">#9E63FF</color>

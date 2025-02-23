@@ -2,15 +2,14 @@ package com.example.googletaskproject.core
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowInsets
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.viewbinding.ViewBinding
 import com.example.googletaskproject.R
 import com.permissionx.guolindev.PermissionX
@@ -30,6 +29,11 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
         this.enableEdgeToEdge()
         _binding = inflateBinding(layoutInflater)
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         initViews(binding.root)
         initListeners(binding.root)
     }

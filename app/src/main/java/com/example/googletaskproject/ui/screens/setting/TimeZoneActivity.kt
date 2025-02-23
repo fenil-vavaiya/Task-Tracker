@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.databinding.ActivityTimeZoneBinding
-import com.example.googletaskproject.domain.TimeZoneModel
+import com.example.googletaskproject.data.model.TimeZoneModel
 import com.example.googletaskproject.ui.screens.setting.adapter.TimeZoneAdapter
 import java.util.Locale
 import java.util.TimeZone
@@ -63,9 +63,10 @@ class TimeZoneActivity : BaseActivity<ActivityTimeZoneBinding>() {
     private fun addDeviceTimeZone() {
         val deviceTimeZone = TimeZone.getDefault()
         val deviceDisplayName = deviceTimeZone.getDisplayName(false, TimeZone.SHORT)
-        val deviceTimeZoneModel = TimeZoneModel(
-            "Auto (Device Time Zone)", deviceDisplayName
-        )
+        val deviceTimeZoneModel =
+            TimeZoneModel(
+                "Auto (Device Time Zone)", deviceDisplayName
+            )
         timeZoneModels.add(0, deviceTimeZoneModel)
     }
 
@@ -78,7 +79,12 @@ class TimeZoneActivity : BaseActivity<ActivityTimeZoneBinding>() {
             Log.e("msg", "" + id)
             val timeZone = TimeZone.getTimeZone(id)
             val displayName = timeZone.getDisplayName(false, TimeZone.SHORT)
-            timeZonesWithOffsets.add(TimeZoneModel(id, displayName))
+            timeZonesWithOffsets.add(
+                TimeZoneModel(
+                    id,
+                    displayName
+                )
+            )
         }
 
         return timeZonesWithOffsets as ArrayList<TimeZoneModel>

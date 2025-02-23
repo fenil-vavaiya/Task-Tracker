@@ -12,8 +12,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.googletaskproject.R
 import com.example.googletaskproject.databinding.ActivityAlwaysOnDisplayBinding
-import com.example.googletaskproject.presentation.EventViewmodel
-import com.example.googletaskproject.ui.screens.home.adapter.DayEventListAdapter
+import com.example.googletaskproject.presentation.TaskViewmodel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +30,7 @@ class AlwaysOnDisplayActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAlwaysOnDisplayBinding
     private var job: Job? = null
-    private val viewmodel: EventViewmodel by viewModels()
+    private val viewmodel: TaskViewmodel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,11 +48,11 @@ class AlwaysOnDisplayActivity : AppCompatActivity() {
 
         binding.dateTv.text = LocalDate().toString("EEE, MMMM dd")
 
-        viewmodel.todayEvents.observe(this) {
+        /*viewmodel.todayEvents.observe(this) {
             binding.rv.adapter = DayEventListAdapter(it) {
 
             }
-        }
+        }*/
 
 
     }

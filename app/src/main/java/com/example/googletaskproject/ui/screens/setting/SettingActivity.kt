@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.databinding.ActivitySettingBinding
-import com.example.googletaskproject.domain.UserModel
+import com.example.googletaskproject.data.model.UserModel
 import com.example.googletaskproject.ui.screens.auth.SignInActivity
 import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.extensions.showLogoutDialog

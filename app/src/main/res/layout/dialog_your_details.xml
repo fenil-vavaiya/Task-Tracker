@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    app:cardCornerRadius="10dp">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
+
+
+            <TextView
+                android:id="@+id/tvTitle"
+                style="@style/boldText12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:text="Enter Your Details"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toTopOf="@+id/tvCheckBox"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvCheckBox"
+                style="@style/mediumText10"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:text="Parent"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toTopOf="@+id/etUserID"
+                app:layout_constraintEnd_toStartOf="@+id/switchChoice"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+            <Switch
+                android:id="@+id/switchChoice"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_gravity="center"
+                android:checked="true"
+                android:thumb="@drawable/custom_thumb_1"
+                android:track="@drawable/custom_track"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCheckBox"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvCheckBox"
+                app:layout_constraintTop_toTopOf="@+id/tvCheckBox" />
+
+            <EditText
+                android:id="@+id/etUserID"
+                style="@style/CustomEditTextStyleOneLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter User ID"
+                android:textSize="@dimen/_10ssp"
+                app:layout_constraintBottom_toTopOf="@+id/etParentId"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCheckBox" />
+
+            <EditText
+                android:id="@+id/etParentId"
+                style="@style/CustomEditTextStyleOneLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter parent device ID"
+                android:textSize="@dimen/_10ssp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/etLocation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etUserID" />
+
+            <EditText
+                android:id="@+id/etLocation"
+                style="@style/CustomEditTextStyleOneLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Location"
+                android:textSize="@dimen/_10ssp"
+                app:layout_constraintBottom_toTopOf="@+id/btnPositive"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etParentId" />
+
+
+            <TextView
+                android:id="@+id/btnPositive"
+                style="@style/SimpleButtonNoPadding"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_60sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:text="Submit"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_10ssp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etLocation" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.cardview.widget.CardView>

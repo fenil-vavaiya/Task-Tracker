@@ -2,7 +2,7 @@ package com.example.googletaskproject.core
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.googletaskproject.domain.TaskRingtoneModel
+import com.example.googletaskproject.data.model.TaskRingtoneModel
 import com.example.googletaskproject.utils.Const
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

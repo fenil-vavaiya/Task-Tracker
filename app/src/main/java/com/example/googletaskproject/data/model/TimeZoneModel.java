@@ -1,4 +1,4 @@
-package com.example.googletaskproject.domain;
+package com.example.googletaskproject.data.model;
 
 public class TimeZoneModel {
         private final String timeZoneId;

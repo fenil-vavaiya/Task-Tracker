@@ -162,7 +162,7 @@
                     </LinearLayout>
 
                     <Switch
-                        android:id="@+id/switchAlarm"
+                        android:id="@+id/switchChoice"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/_20sdp"
                         android:layout_gravity="center"
