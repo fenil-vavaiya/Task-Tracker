@@ -7,8 +7,9 @@ import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.core.SessionManager
-import com.example.googletaskproject.databinding.ActivitySettingBinding
 import com.example.googletaskproject.data.model.UserModel
+import com.example.googletaskproject.databinding.ActivitySettingBinding
+import com.example.googletaskproject.ui.components.showSleepMessage
 import com.example.googletaskproject.ui.screens.auth.SignInActivity
 import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.extensions.showLogoutDialog
@@ -32,6 +33,9 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>() {
     }
 
     override fun initListeners(view: View) {
+
+        binding.sleepModeSegment.setOnClickListener { showSleepMessage() }
+
         binding.timeZoneSettingSegment.setOnClickListener {
             startActivity(
                 Intent(

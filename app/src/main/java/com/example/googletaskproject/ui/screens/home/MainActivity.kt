@@ -8,12 +8,18 @@ import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.content.res.ResourcesCompat
 import com.example.googletaskproject.R
 import com.example.googletaskproject.background.OverlayService
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.core.SessionManager
+import com.example.googletaskproject.core.state.TypeState
+import com.example.googletaskproject.data.model.TaskItem
 import com.example.googletaskproject.data.model.UserModel
 import com.example.googletaskproject.databinding.ActivityMainBinding
 import com.example.googletaskproject.presentation.TaskViewmodel
@@ -24,11 +30,15 @@ import com.example.googletaskproject.ui.screens.home.adapter.TaskListAdapter
 import com.example.googletaskproject.ui.screens.setting.SettingActivity
 import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.Const.TAG
+import com.example.googletaskproject.utils.extensions.cancelScheduledAlarm
+import com.example.googletaskproject.utils.extensions.context.showToast
 import com.example.googletaskproject.utils.extensions.scheduleEvent
 import com.example.googletaskproject.utils.extensions.showOverlayPermissionDialog
 import com.example.googletaskproject.utils.helper.CalendarHelper
+import com.example.googletaskproject.utils.helper.CalendarHelper.filterEventsByExactDate
 import com.example.googletaskproject.utils.helper.CalendarHelper.sortFutureEvents
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,28 +75,25 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                         CoroutineScope(Dispatchers.IO).launch {
                             SessionManager.putObject(Const.USER_INFO, it)
 
-                            val eventsList = CalendarHelper.fetchGoogleCalendarEvents(
-                                this@MainActivity, userInfo.email
-                            )
-                            Log.d(TAG, "initViews: eventsList.size = ${eventsList.size}")
-
-                            if (it.parentId.isEmpty()) {
-                                viewmodel.addTaskList(Const.TASK_GROUP_ID, eventsList)
-                            }
-
-                            val futureEvents = sortFutureEvents(eventsList)
-
-                            futureEvents.forEach { event ->
-                                scheduleEvent(event)
-                            }
+                            fetchTasksGoogle(it) {}
 
                         }
                     }
                 }
 
                 viewmodel.tasksLiveData.observe(this) {
+
                     Log.d(TAG, "initViews: $it")
-                    adapter.setData(it)
+                    val dataList = filterEventsByExactDate(it, LocalDate())
+                    Log.d(TAG, "initViews: today task = $dataList")
+                    if (dataList.isEmpty()) {
+                        binding.spinnerMode.setSelection(2)
+                    }
+
+                    binding.noDataTv.visibility =
+                        if (dataList.isEmpty()) View.VISIBLE else View.GONE
+                    adapter.setData(dataList)
+
                 }
 //                    startOverlayService()
                 viewmodel.fetchTasks(Const.TASK_GROUP_ID)
@@ -95,9 +102,101 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 startUpdatingTime()
                 binding.dateTv.text = LocalDate().toString("EEE, MMMM dd")
 
+                handleIntent()
+                handleSpinner()
+
             }
         }
 
+    }
+
+    private fun handleSpinner() {
+        val stateList = listOf(
+            TypeState.SettingState, TypeState.UsageState, TypeState.SleepState
+        )
+
+        val stateNames = stateList.map { it.name }
+
+        val adapter = ArrayAdapter(
+            this,
+            R.layout.spinner_text,
+            stateNames
+        )
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown)
+
+        binding.spinnerMode.adapter = adapter
+        binding.spinnerMode.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
+            ) {
+                handleState(stateList[position])
+
+                (view as? TextView)?.apply {
+                    typeface = ResourcesCompat.getFont(
+                        this@MainActivity, R.font.poppins_medium
+                    )
+                    textSize = 12f
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+    }
+
+    private fun handleState(typeState: TypeState) {
+        when (typeState) {
+            TypeState.SettingState -> {
+                binding.settingSegment.visibility = View.VISIBLE
+                binding.sleepSegment.visibility = View.GONE
+                adapter.changeState(typeState)
+            }
+
+            TypeState.SleepState -> {
+                binding.settingSegment.visibility = View.GONE
+                binding.sleepSegment.visibility = View.VISIBLE
+                binding.sleepMessageTv.text = SessionManager.getString(Const.SLEEP_MODE_MESSAGE)
+            }
+
+            TypeState.UsageState -> {
+                binding.settingSegment.visibility = View.VISIBLE
+                binding.sleepSegment.visibility = View.GONE
+                adapter.changeState(typeState)
+            }
+        }
+    }
+
+    private fun handleIntent() {
+        if (intent.getBooleanExtra(Const.FROM_ALARM, false)) {
+            val task = Gson().fromJson(
+                intent.getStringExtra(Const.TASK_DATA), TaskItem::class.java
+            )
+            task?.let {
+                showAddTask(task) {
+                    viewmodel.updateTask(Const.TASK_GROUP_ID, it)
+                    scheduleEvent(it)
+                    viewmodel.fetchTasks(Const.TASK_GROUP_ID)
+                }
+            }
+        }
+    }
+
+    private fun fetchTasksGoogle(it: UserModel, callback: () -> Unit) {
+        val eventsList = CalendarHelper.fetchGoogleCalendarEvents(
+            this@MainActivity, it.email
+        )
+        Log.d(TAG, "initViews: eventsList.size = ${eventsList.size}")
+
+        if (it.parentId.isEmpty()) {
+            viewmodel.addTaskList(Const.TASK_GROUP_ID, eventsList)
+        }
+
+        val futureEvents = sortFutureEvents(eventsList)
+
+        futureEvents.forEach { event ->
+            scheduleEvent(event)
+        }
+
+        callback.invoke()
     }
 
 
@@ -115,8 +214,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun initListeners(view: View) {
 
         binding.btnSyncTask.setOnClickListener {
-
+            SessionManager.getObject(Const.USER_INFO, UserModel::class.java)?.let {
+                fetchTasksGoogle(it) {
+                    showToast("Task synced successfully")
+                }
+            }
         }
+
         binding.btnSetting.setOnClickListener {
             startActivity(Intent(this, SettingActivity::class.java))
         }
@@ -134,6 +238,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                     deleteDialog {
                         viewmodel.deleteTask(Const.TASK_GROUP_ID, it.task.taskId)
                         adapter.removeItem(it.position)
+                        cancelScheduledAlarm(it.task.taskId)
                     }
                 }
 
@@ -201,7 +306,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private fun stopUpdatingTime() {
         job?.cancel()
     }
-
 
 
     override fun onDestroy() {

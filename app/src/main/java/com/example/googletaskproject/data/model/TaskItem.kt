@@ -18,7 +18,7 @@ data class TaskItem(
     val calendarId: String = "", // To differentiate calendars
     var location: String = "",
     val assignedTo: String = "",
-    val isCompleted: Boolean = false,
+    var isCompleted: Boolean = false,
 ) : Parcelable {
     fun toTaskItem() = TaskItem(
         taskId,

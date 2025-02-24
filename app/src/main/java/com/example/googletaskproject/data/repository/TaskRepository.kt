@@ -133,6 +133,7 @@ class TaskRepository @Inject constructor(
 
     suspend fun insertTasks(groupId: String, tasks: List<TaskItem>) {
         try {
+            taskDao.clearTasks()
             // Insert all tasks into Room and get their generated IDs
             val insertedTaskIds =
                 taskDao.insertTasks(tasks.map { it.toTaskEntity() }) // Returns List<Long>

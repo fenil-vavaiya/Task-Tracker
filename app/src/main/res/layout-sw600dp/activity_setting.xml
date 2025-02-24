@@ -15,7 +15,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_5sdp"
-        android:layout_marginTop="@dimen/_10sdp"
         android:gravity="center"
         android:text="Setting"
         android:textColor="@color/white"
@@ -124,6 +123,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/timeZoneSettingSegment"
             style="@style/rippleButton"
@@ -132,7 +132,7 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:background="@drawable/bg_10_round"
             android:paddingVertical="@dimen/_10sdp"
-            app:layout_constraintBottom_toTopOf="@+id/logoutSegment"
+            app:layout_constraintBottom_toTopOf="@+id/sleepModeSegment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/chooseTaskMusicSegment">
@@ -164,6 +164,44 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/sleepModeSegment"
+            style="@style/rippleButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@drawable/bg_10_round"
+            android:paddingVertical="@dimen/_13sdp"
+            app:layout_constraintBottom_toTopOf="@+id/logoutSegment"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/timeZoneSettingSegment">
+
+
+            <TextView
+                android:id="@+id/sleepModeText"
+                style="@style/mediumText8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:text="Sleep mode message"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/sleepModeImage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/sleepModeImage"
+                android:layout_width="@dimen/_10sdp"
+                android:layout_height="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:src="@drawable/ic_right_arrow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/sleepModeText"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/logoutSegment"
             style="@style/rippleButton"
             android:layout_width="0dp"
@@ -174,7 +212,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/timeZoneSettingSegment">
+            app:layout_constraintTop_toBottomOf="@+id/sleepModeSegment">
 
 
             <TextView

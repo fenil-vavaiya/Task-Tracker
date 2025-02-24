@@ -4,17 +4,13 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.CalendarContract
 import androidx.core.database.getIntOrNull
-import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.data.model.DayWiseEvent
 import com.example.googletaskproject.data.model.TaskItem
-import com.example.googletaskproject.utils.Const
 import org.joda.time.DateTimeZone
 import org.joda.time.LocalDate
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 
 object CalendarHelper {
 
@@ -175,18 +171,5 @@ object CalendarHelper {
         }.sortedBy { it.startTime } // Sort by start time
     }
 
-    fun isSameDay(dayOne: Calendar, dayTwo: Calendar): Boolean {
-        return LocalDate(dayOne.timeInMillis).isEqual(LocalDate(dayTwo.timeInMillis))
-    }
 
-    fun today(): Calendar {
-        return Calendar.getInstance()
-    }
-
-    fun getCustomTimeZone(): TimeZone {
-        val selectedTimeZone = SessionManager.getString(Const.SELECTED_TIME_ZONE)
-        return if (selectedTimeZone == Const.DEFAULT_TIME_ZONE) TimeZone.getDefault() else TimeZone.getTimeZone(
-            selectedTimeZone
-        )
-    }
 }

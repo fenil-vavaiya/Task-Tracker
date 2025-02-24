@@ -10,17 +10,16 @@
     tools:context=".ui.screens.home.TaskAlarmActivity">
 
     <TextView
-        style="@style/mediumText16"
+        style="@style/mediumText8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_20sdp"
         android:gravity="center"
         android:text="Get Ready for task"
         android:textColor="@color/white" />
-
     <TextView
         android:id="@+id/taskTitleTv"
-        style="@style/mediumText16"
+        style="@style/mediumText8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_20sdp"
@@ -33,7 +32,7 @@
 
     <TextView
         android:id="@+id/descriptionTv"
-        style="@style/mediumText16"
+        style="@style/mediumText8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_20sdp"
@@ -46,7 +45,7 @@
 
     <TextView
         android:id="@+id/startTimeTv"
-        style="@style/mediumText16"
+        style="@style/mediumText8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_20sdp"
@@ -59,7 +58,7 @@
 
     <TextView
         android:id="@+id/btnStart"
-        style="@style/Button"
+        style="@style/ButtonTablet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_10sdp"
@@ -72,7 +71,7 @@
 
     <TextView
         android:id="@+id/btnReschedule"
-        style="@style/Button"
+        style="@style/ButtonTablet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_10sdp"

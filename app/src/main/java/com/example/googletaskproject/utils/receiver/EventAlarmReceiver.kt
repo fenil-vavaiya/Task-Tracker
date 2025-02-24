@@ -15,14 +15,14 @@ class EventAlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
         intent?.let { it ->
-            it.getStringExtra(Const.EVENT_DATA)?.let {
+            it.getStringExtra(Const.TASK_DATA)?.let {
                 val event = Gson().fromJson(it, TaskItem::class.java)
 //                context?.sendNotification(event.title, event.description)
                 Log.d(TAG, "onReceive: starting alarm activity ")
                 Intent(context, TaskAlarmActivity::class.java).apply {
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    putExtra(Const.EVENT_DATA, Gson().toJson(event))
+                    putExtra(Const.TASK_DATA, Gson().toJson(event))
                     context.startActivity(this)
                 }
             }

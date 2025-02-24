@@ -2,6 +2,8 @@ package com.example.googletaskproject.utils
 
 object Const {
 
+    const val SLEEP_MODE_MESSAGE = "sleepModeMessage"
+    const val FROM_ALARM = "fromAlarm"
     const val TASK_GROUP_ID = "2iO76zYgFz7iqNUB2xKP"
     const val TABLE_NAME = "event_table"
     const val DATABASE_NAME = "event_db"
@@ -10,7 +12,7 @@ object Const {
     const val DATA = "data"
     const val NOTIFICATION_CHANNEL_ID = "Task-Reminder"
     const val RINGTONE_MUSIC = "ringtoneMusic"
-    const val EVENT_DATA = "eventData"
+    const val TASK_DATA = "eventData"
     const val DEFAULT_TIME_ZONE = "Auto (Device Time Zone)"
     const val IS_SESSION_SAVED = "isSessionSaved"
     const val SELECTED_TIME_ZONE = "selectedTimeZone"

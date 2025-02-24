@@ -23,6 +23,7 @@ object SessionManager {
 
         if (!getBoolean(Const.IS_SESSION_SAVED)) {
             putString(Const.SELECTED_TIME_ZONE, "Auto (Device Time Zone)")
+            putString(Const.SLEEP_MODE_MESSAGE, "The device is standby. No active tasks are displayed")
             putObject(Const.RINGTONE_MUSIC, TaskRingtoneModel("None", -1))
             putBoolean(Const.IS_SESSION_SAVED, true)
         }

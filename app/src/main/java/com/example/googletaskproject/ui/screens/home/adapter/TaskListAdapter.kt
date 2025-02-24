@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.googletaskproject.R
+import com.example.googletaskproject.core.state.TypeState
 import com.example.googletaskproject.data.model.TaskItem
 import com.example.googletaskproject.databinding.ItemReminderListEventBinding
 import com.example.googletaskproject.utils.Const.TAG
@@ -14,6 +15,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.DayEventListViewHolder>() {
+    private var typeState: TypeState = TypeState.UsageState
     private var dataList = emptyList<TaskItem>()
     private lateinit var callback: (TaskCallback) -> Unit
 
@@ -55,26 +57,42 @@ class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.DayEventListViewHol
         }
     }
 
+    fun changeState(typeState: TypeState) {
+        this.typeState = typeState
+        notifyDataSetChanged()
+    }
+
     inner class DayEventListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = ItemReminderListEventBinding.bind(itemView)
         fun bind(item: TaskItem, position: Int) {
             binding.reminderName.text = item.title
             binding.reminderTime.text = convertTimestampToTime(item.startTime)
-            binding.checkBox?.isChecked = item.isCompleted
+            binding.checkBox.isChecked = item.isCompleted
+
+            when (typeState) {
+                TypeState.SettingState -> {
+                    binding.btnEdit.visibility = View.VISIBLE; binding.btnDelete.visibility =
+                        View.VISIBLE
+                }
+
+                TypeState.SleepState -> {}
+                TypeState.UsageState -> {
+                    binding.btnEdit.visibility = View.GONE; binding.btnDelete.visibility = View.GONE
+                }
+            }
 
             binding.root.setOnClickListener {
                 callback(TaskCallback.OnTaskClick(item))
             }
 
-            binding.btnEdit?.setOnClickListener {
+            binding.btnEdit.setOnClickListener {
                 callback(TaskCallback.OnEditClick(item, position))
             }
 
-            binding.btnDelete?.setOnClickListener {
+            binding.btnDelete.setOnClickListener {
                 callback(
                     TaskCallback.OnDeleteClick(
-                        item,
-                        position
+                        item, position
                     )
                 )
             }
