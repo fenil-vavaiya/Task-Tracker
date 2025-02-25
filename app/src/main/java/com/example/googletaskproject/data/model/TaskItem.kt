@@ -17,7 +17,7 @@ data class TaskItem(
     var reminderBefore: Int = 0,
     val calendarId: String = "", // To differentiate calendars
     var location: String = "",
-    val assignedTo: String = "",
+    var assignedTo: String = "",
     var isCompleted: Boolean = false,
 ) : Parcelable {
     fun toTaskItem() = TaskItem(

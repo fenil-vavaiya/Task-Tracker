@@ -28,6 +28,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>() {
 
         userInfo?.let {
             binding.userName.text = it.name
+            binding.userId.text = it.userId
             Glide.with(this).load(userInfo.photoUrl.toUri()).circleCrop().into(binding.userImage)
         }
     }

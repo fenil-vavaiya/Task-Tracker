@@ -19,6 +19,7 @@ import com.example.googletaskproject.background.OverlayService
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.core.state.TypeState
+import com.example.googletaskproject.data.model.GroupMember
 import com.example.googletaskproject.data.model.TaskItem
 import com.example.googletaskproject.data.model.UserModel
 import com.example.googletaskproject.databinding.ActivityMainBinding
@@ -31,12 +32,12 @@ import com.example.googletaskproject.ui.screens.setting.SettingActivity
 import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.Const.TAG
 import com.example.googletaskproject.utils.extensions.cancelScheduledAlarm
+import com.example.googletaskproject.utils.extensions.context.getAndroidId
 import com.example.googletaskproject.utils.extensions.context.showToast
 import com.example.googletaskproject.utils.extensions.scheduleEvent
 import com.example.googletaskproject.utils.extensions.showOverlayPermissionDialog
 import com.example.googletaskproject.utils.helper.CalendarHelper
 import com.example.googletaskproject.utils.helper.CalendarHelper.filterEventsByExactDate
-import com.example.googletaskproject.utils.helper.CalendarHelper.sortFutureEvents
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,6 +55,7 @@ import java.util.Locale
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
+    private var groupMembers: List<GroupMember> = emptyList()
     private var intentService: Intent? = null
     private val viewmodel: TaskViewmodel by viewModels()
     private val adapter = TaskListAdapter()
@@ -72,42 +74,48 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 if (userInfo.userId.isEmpty()) {
                     showUserDetails(userInfo) {
                         // Fetch events from Google Calendar and save to database
-                        CoroutineScope(Dispatchers.IO).launch {
-                            SessionManager.putObject(Const.USER_INFO, it)
-
-                            fetchTasksGoogle(it) {}
-
+                        fetchTasksGoogle(it) {
+                            initializeAppEnvironment(userInfo)
                         }
                     }
                 }
 
-                viewmodel.tasksLiveData.observe(this) {
-
-                    Log.d(TAG, "initViews: $it")
-                    val dataList = filterEventsByExactDate(it, LocalDate())
-                    Log.d(TAG, "initViews: today task = $dataList")
-                    if (dataList.isEmpty()) {
-                        binding.spinnerMode.setSelection(2)
-                    }
-
-                    binding.noDataTv.visibility =
-                        if (dataList.isEmpty()) View.VISIBLE else View.GONE
-                    adapter.setData(dataList)
-
-                }
-//                    startOverlayService()
-                viewmodel.fetchTasks(Const.TASK_GROUP_ID)
-
-                binding.rv.adapter = adapter
-                startUpdatingTime()
-                binding.dateTv.text = LocalDate().toString("EEE, MMMM dd")
-
-                handleIntent()
-                handleSpinner()
+                initializeAppEnvironment(userInfo)
 
             }
         }
 
+    }
+
+    private fun initializeAppEnvironment(userInfo: UserModel) {
+        if (userInfo.userId.isNotEmpty()) {
+            viewmodel.tasksLiveData.observe(this) {
+                Log.d(TAG, "initViews: $it")
+                val dataList = filterEventsByExactDate(it, LocalDate())
+                Log.d(TAG, "initViews: today task = $dataList")
+                if (dataList.isEmpty()) {
+                    binding.spinnerMode.setSelection(2)
+                }
+
+                binding.noDataTv.visibility = if (dataList.isEmpty()) View.VISIBLE else View.GONE
+                adapter.setData(dataList)
+
+            }
+
+            viewmodel.groupMembers.observe(this) {
+                groupMembers = it
+            }
+            viewmodel.fetchTasks(userInfo.groupId)
+            viewmodel.fetchGroupMembers(userInfo.groupId)
+
+            binding.rv.adapter = adapter
+            startUpdatingTime()
+            binding.dateTv.text = LocalDate().toString("EEE, MMMM dd")
+
+            handleIntent()
+            handleSpinner()
+            //                    startOverlayService()
+        }
     }
 
     private fun handleSpinner() {
@@ -118,9 +126,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         val stateNames = stateList.map { it.name }
 
         val adapter = ArrayAdapter(
-            this,
-            R.layout.spinner_text,
-            stateNames
+            this, R.layout.spinner_text, stateNames
         )
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown)
 
@@ -171,7 +177,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 intent.getStringExtra(Const.TASK_DATA), TaskItem::class.java
             )
             task?.let {
-                showAddTask(task) {
+                showAddTask(task, groupMembers) {
                     viewmodel.updateTask(Const.TASK_GROUP_ID, it)
                     scheduleEvent(it)
                     viewmodel.fetchTasks(Const.TASK_GROUP_ID)
@@ -186,15 +192,24 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         )
         Log.d(TAG, "initViews: eventsList.size = ${eventsList.size}")
 
-        if (it.parentId.isEmpty()) {
-            viewmodel.addTaskList(Const.TASK_GROUP_ID, eventsList)
+        if (it.userId == it.groupId) {
+            viewmodel.createNewGroup(it.groupId)
+            viewmodel.addMember(
+                it.groupId, GroupMember(it.groupId, getAndroidId(), it.groupId, it.location)
+            )
+            viewmodel.addTaskList(it.groupId, eventsList)
+        } else {
+            viewmodel.addMember(
+                it.groupId, GroupMember(it.userId, getAndroidId(), it.groupId, it.location)
+            )
+            viewmodel.fetchTasks(it.groupId)
         }
 
-        val futureEvents = sortFutureEvents(eventsList)
+        /* val futureEvents = sortFutureEvents(eventsList)
 
-        futureEvents.forEach { event ->
-            scheduleEvent(event)
-        }
+         futureEvents.forEach { event ->
+             scheduleEvent(event)
+         }*/
 
         callback.invoke()
     }
@@ -226,7 +241,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
 
         binding.btnAddTask.setOnClickListener {
-            showAddTask {
+            showAddTask(members = groupMembers) {
                 viewmodel.addTask(Const.TASK_GROUP_ID, it)
                 scheduleEvent(it)
             }
@@ -244,7 +259,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
                 is TaskCallback.OnEditClick -> {
                     Log.d(TAG, "initListeners: click task")
-                    showAddTask(it.task) { newItem ->
+                    showAddTask(it.task, groupMembers) { newItem ->
                         adapter.editItem(it.position, newItem)
                         viewmodel.updateTask(Const.TASK_GROUP_ID, newItem)
                         scheduleEvent(it.task)

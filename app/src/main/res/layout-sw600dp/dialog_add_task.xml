@@ -42,14 +42,35 @@
                 android:layout_height="wrap_content"
                 android:hint="Enter start time"
                 android:textSize="@dimen/_6ssp" />
-
-            <EditText
-                android:id="@+id/etLocation"
-                style="@style/CustomEditTextStyleOneLine"
+            <LinearLayout
+                android:id="@+id/spinnerSegment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter Location"
-                android:textSize="@dimen/_6ssp" />
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:background="@drawable/edittext_bg"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/_5sdp"
+                app:layout_constraintBottom_toBottomOf="@+id/ModeTv"
+                app:layout_constraintStart_toEndOf="@+id/ModeTv"
+                app:layout_constraintTop_toTopOf="@+id/ModeTv">
+
+                <Spinner
+                    android:id="@+id/spinnerLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:spinnerMode="dropdown" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:src="@drawable/ic_drop_down"
+                    app:tint="@color/black" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/etReminderBefore"

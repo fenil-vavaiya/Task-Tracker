@@ -53,11 +53,20 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_5sdp"
             android:text="Fenil"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/userId"
             app:layout_constraintEnd_toStartOf="@+id/userNameImage"
             app:layout_constraintStart_toEndOf="@+id/userImage"
             app:layout_constraintTop_toTopOf="parent" />
-
+        <TextView
+            android:id="@+id/userId"
+            style="@style/mediumText6"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Fenil"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/userName"
+            app:layout_constraintStart_toStartOf="@+id/userName"
+            app:layout_constraintTop_toBottomOf="@+id/userName" />
         <ImageView
             android:id="@+id/userNameImage"
             android:layout_width="@dimen/_10sdp"

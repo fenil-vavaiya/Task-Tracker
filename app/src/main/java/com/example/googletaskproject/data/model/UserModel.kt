@@ -6,5 +6,5 @@ data class UserModel(
     val photoUrl: String,
     var userId: String = "",
     var location: String = "",
-    var parentId: String = "",
+    var groupId: String = "",
 )

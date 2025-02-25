@@ -2,8 +2,11 @@ package com.example.googletaskproject.data.repository
 
 import android.util.Log
 import com.example.googletaskproject.data.local.dao.TaskDao
+import com.example.googletaskproject.data.model.Group
+import com.example.googletaskproject.data.model.GroupMember
 import com.example.googletaskproject.data.model.TaskItem
 import com.example.googletaskproject.utils.Const.TAG
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -20,7 +23,77 @@ class TaskRepository @Inject constructor(
     private val firestore: FirebaseFirestore, private val taskDao: TaskDao
 ) {
 
-    fun getTasksWithCaching(groupId: String): Flow<List<TaskItem>> = channelFlow {
+
+    fun createGroup(groupId: String): Task<Void> {
+        Log.d(TAG, "createGroup: groupId = $groupId")
+
+        val groupData = hashMapOf(
+            "members" to listOf<Map<String, Any>>() // Empty list (to be updated later)
+        )
+
+        return FirebaseFirestore.getInstance().collection("groups").document(groupId)
+            .set(groupData)
+    }
+
+
+    fun addMemberToGroup(groupId: String, newMember: GroupMember): Task<Void> {
+        val groupRef = firestore.collection("groups").document(groupId)
+
+        return firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(groupRef)
+            val currentMembers = snapshot.toObject(Group::class.java)?.members ?: emptyList()
+
+            // Convert to mutable list and add the new member
+            val updatedMembers = currentMembers.toMutableList()
+            if (!updatedMembers.any { it.androidId == newMember.androidId }) { // Prevent duplicates
+                updatedMembers.add(newMember)
+            }
+
+            // Update Firestore
+            transaction.update(groupRef, "members", updatedMembers)
+            null
+        }
+    }
+
+    fun getGroupMembers(groupId: String): Flow<List<GroupMember>> = channelFlow {
+        val listener = firestore.collection("groups").document(groupId)
+            .addSnapshotListener { document, error ->
+                if (error != null) {
+                    Log.e(TAG, "Error fetching members: ${error.message}")
+                    return@addSnapshotListener
+                }
+
+                if (document == null || !document.exists()) {
+                    Log.e(TAG, "Document does not exist")
+                    trySend(emptyList()).isSuccess // Send empty list instead of crashing
+                    return@addSnapshotListener
+                }
+
+                val membersList = document.get("members") as? List<Map<String, Any>> ?: emptyList()
+
+                val members = membersList.mapNotNull { memberMap ->
+                    try {
+                        GroupMember(
+                            memberId = memberMap["memberId"] as? String ?: "",
+                            androidId = memberMap["androidId"] as? String ?: "",
+                            parentId = memberMap["parentId"] as? String ?: "",
+                            location = memberMap["location"] as? String ?: "",
+                        )
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error parsing member: ${e.message}")
+                        null // Skip faulty entries
+                    }
+                }
+
+                // Send updated member list
+                trySend(members).isSuccess
+            }
+
+        awaitClose { listener.remove() }
+    }
+
+
+    fun getTasks(groupId: String): Flow<List<TaskItem>> = channelFlow {
         // Emit cached tasks first (from Room DB)
         val cachedTasks = taskDao.getTasks().first().map { it.toTaskItem() }
         send(cachedTasks) // Use `send()` inside `channelFlow`
@@ -64,7 +137,7 @@ class TaskRepository @Inject constructor(
         awaitClose { listener.remove() }
     }
 
-    fun getTasks(groupId: String): Flow<List<TaskItem>> = channelFlow {
+    fun getTasksWithCaching(groupId: String): Flow<List<TaskItem>> = channelFlow {
         val listener = firestore.collection("groups").document(groupId).collection("tasks")
             .orderBy("startTime", Query.Direction.ASCENDING)
             .addSnapshotListener { documents, error ->
