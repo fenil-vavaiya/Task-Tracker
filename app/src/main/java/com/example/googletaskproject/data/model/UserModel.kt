@@ -8,5 +8,6 @@ data class UserModel(
     var role: String = "",
     var location: String = "",
     var groupId: String = "",
+    var fcmToken: String = "",
     val createdAt: Long = System.currentTimeMillis(),
 )

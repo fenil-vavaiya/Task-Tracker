@@ -41,6 +41,8 @@ import com.example.googletaskproject.utils.helper.CalendarHelper
 import com.example.googletaskproject.utils.helper.CalendarHelper.filterEventsByExactDate
 import com.example.googletaskproject.utils.helper.getUserInfo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -103,10 +105,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 binding.noDataTv.visibility = if (dataList.isEmpty()) View.VISIBLE else View.GONE
                 adapter.setData(dataList)
 
-                dataList.forEach {
-                    if (it.assignedTo == getUserInfo().userId) {
-                        Log.d(TAG, "initializeAppEnvironment: task matched ")
+
+                it.forEach {
+                    if (it.assignedTo == getUserInfo().userId && it.startTime >= System.currentTimeMillis()) {
+                        Log.d(TAG, "initializeAppEnvironment: future task matched ")
                         scheduleTask(it)
+                    } else {
+                        cancelScheduledAlarm(it.taskId)
                     }
                 }
             }
@@ -212,12 +217,29 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         viewmodel.addMember(
             GroupMember(it.userId, getAndroidId(), it.groupId, it.location)
         )
-
+        saveFCMToken(it)
         /*val futureEvents = sortFutureEvents(eventsList)
 
         futureEvents.forEach { event ->
             scheduleEvent(event)
         }*/
+    }
+
+    private fun saveFCMToken(userModel: UserModel) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FCM", "Fetching FCM token failed", task.exception)
+                return@addOnCompleteListener
+            }
+            val token = task.result
+            userModel.fcmToken = token
+            SessionManager.putObject(Const.USER_INFO, userModel)
+            val userRef =
+                FirebaseFirestore.getInstance().collection("users").document(userModel.email)
+            userRef.update("fcmToken", token)
+                .addOnSuccessListener { Log.d(TAG, "Token saved successfully") }
+                .addOnFailureListener { Log.e(TAG, "Error saving token", it) }
+        }
     }
 
     private fun uploadTasks(it: UserModel) {
@@ -255,7 +277,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         binding.btnAddTask.setOnClickListener {
             showAddTask(members = groupMembers) {
                 viewmodel.addTask(it)
-                scheduleTask(it)
             }
         }
 
@@ -274,7 +295,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                     showAddTask(it.task, groupMembers) { newItem ->
                         adapter.editItem(it.position, newItem)
                         viewmodel.updateTask(newItem)
-                        scheduleTask(it.task)
                     }
                 }
 

@@ -10,14 +10,14 @@ import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.receiver.EventAlarmReceiver
 import com.google.gson.Gson
 
-fun Context.scheduleTask(eventInfo: TaskItem) {
+fun Context.scheduleTask(taskItem: TaskItem) {
     val intent = Intent(this, EventAlarmReceiver::class.java).apply {
-        putExtra(Const.TASK_DATA, Gson().toJson(eventInfo))
+        putExtra(Const.TASK_DATA, Gson().toJson(taskItem))
     }
 
     val pendingIntent = PendingIntent.getBroadcast(
         this,
-        eventInfo.taskId,
+        taskItem.taskId,
         intent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
@@ -25,7 +25,7 @@ fun Context.scheduleTask(eventInfo: TaskItem) {
     val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
     alarmManager.cancel(pendingIntent) // Cancel existing alarm (if any)
 
-    scheduleAlarm(eventInfo.startTime, eventInfo.reminderBefore, alarmManager, pendingIntent)
+    scheduleAlarm(taskItem.startTime, taskItem.reminderBefore, alarmManager, pendingIntent)
 
 }
 
