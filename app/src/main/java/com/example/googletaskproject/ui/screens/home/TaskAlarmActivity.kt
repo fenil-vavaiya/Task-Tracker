@@ -71,7 +71,7 @@ class TaskAlarmActivity : AppCompatActivity() {
         binding.btnStart.setOnClickListener {
             stopAlarmSound() // Stop sound when alarm is dismissed
             task.isCompleted = true
-            viewmodel.updateTask(Const.TASK_GROUP_ID, task)
+            viewmodel.updateTask(task)
             finish()
         }
 

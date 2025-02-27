@@ -10,7 +10,7 @@ import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.receiver.EventAlarmReceiver
 import com.google.gson.Gson
 
-fun Context.scheduleEvent(eventInfo: TaskItem) {
+fun Context.scheduleTask(eventInfo: TaskItem) {
     val intent = Intent(this, EventAlarmReceiver::class.java).apply {
         putExtra(Const.TASK_DATA, Gson().toJson(eventInfo))
     }

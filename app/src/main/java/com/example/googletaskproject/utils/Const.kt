@@ -2,9 +2,10 @@ package com.example.googletaskproject.utils
 
 object Const {
 
+    const val ROLE_PARENT = "parent"
+    const val ROLE_CHILD = "child"
     const val SLEEP_MODE_MESSAGE = "sleepModeMessage"
     const val FROM_ALARM = "fromAlarm"
-    const val TASK_GROUP_ID = "2iO76zYgFz7iqNUB2xKP"
     const val TABLE_NAME = "event_table"
     const val DATABASE_NAME = "event_db"
 

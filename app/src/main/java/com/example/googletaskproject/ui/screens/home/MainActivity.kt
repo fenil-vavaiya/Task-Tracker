@@ -19,6 +19,7 @@ import com.example.googletaskproject.background.OverlayService
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.core.SessionManager
 import com.example.googletaskproject.core.state.TypeState
+import com.example.googletaskproject.data.model.GroupItem
 import com.example.googletaskproject.data.model.GroupMember
 import com.example.googletaskproject.data.model.TaskItem
 import com.example.googletaskproject.data.model.UserModel
@@ -34,10 +35,11 @@ import com.example.googletaskproject.utils.Const.TAG
 import com.example.googletaskproject.utils.extensions.cancelScheduledAlarm
 import com.example.googletaskproject.utils.extensions.context.getAndroidId
 import com.example.googletaskproject.utils.extensions.context.showToast
-import com.example.googletaskproject.utils.extensions.scheduleEvent
+import com.example.googletaskproject.utils.extensions.scheduleTask
 import com.example.googletaskproject.utils.extensions.showOverlayPermissionDialog
 import com.example.googletaskproject.utils.helper.CalendarHelper
 import com.example.googletaskproject.utils.helper.CalendarHelper.filterEventsByExactDate
+import com.example.googletaskproject.utils.helper.getUserInfo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -70,18 +72,21 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         arePermissionGranted {
             val userInfo = SessionManager.getObject(Const.USER_INFO, UserModel::class.java)
-            userInfo?.let {
+            userInfo?.let { it ->
                 if (userInfo.userId.isEmpty()) {
-                    showUserDetails(userInfo) {
-                        // Fetch events from Google Calendar and save to database
-                        fetchTasksGoogle(it) {
-                            initializeAppEnvironment(userInfo)
+                    viewmodel.getUser(it.email).addOnSuccessListener {
+                        Log.d(TAG, "initViews: user model = $it")
+                        SessionManager.putObject(Const.USER_INFO, it)
+                        initializeAppEnvironment(it)
+                    }.addOnFailureListener {
+                        showUserDetails(userInfo, viewmodel) {
+                            // Fetch events from Google Calendar and save to database
+                            setupUserInitial(it)
+                            initializeAppEnvironment(it)
                         }
                     }
                 }
-
                 initializeAppEnvironment(userInfo)
-
             }
         }
 
@@ -89,24 +94,29 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     private fun initializeAppEnvironment(userInfo: UserModel) {
         if (userInfo.userId.isNotEmpty()) {
-            viewmodel.tasksLiveData.observe(this) {
+            viewmodel.tasksLiveData.observe(this) { it ->
                 Log.d(TAG, "initViews: $it")
                 val dataList = filterEventsByExactDate(it, LocalDate())
                 Log.d(TAG, "initViews: today task = $dataList")
-                if (dataList.isEmpty()) {
-                    binding.spinnerMode.setSelection(2)
-                }
+                binding.spinnerMode.setSelection(if (dataList.isEmpty()) 2 else 0)
 
                 binding.noDataTv.visibility = if (dataList.isEmpty()) View.VISIBLE else View.GONE
                 adapter.setData(dataList)
 
+                dataList.forEach {
+                    if (it.assignedTo == getUserInfo().userId) {
+                        Log.d(TAG, "initializeAppEnvironment: task matched ")
+                        scheduleTask(it)
+                    }
+                }
             }
 
             viewmodel.groupMembers.observe(this) {
+                Log.d(TAG, "initializeAppEnvironment: groupMembers list = $it")
                 groupMembers = it
             }
-            viewmodel.fetchTasks(userInfo.groupId)
-            viewmodel.fetchGroupMembers(userInfo.groupId)
+            viewmodel.fetchTasks()
+            viewmodel.fetchGroupMembers()
 
             binding.rv.adapter = adapter
             startUpdatingTime()
@@ -178,40 +188,41 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             )
             task?.let {
                 showAddTask(task, groupMembers) {
-                    viewmodel.updateTask(Const.TASK_GROUP_ID, it)
-                    scheduleEvent(it)
-                    viewmodel.fetchTasks(Const.TASK_GROUP_ID)
+                    viewmodel.updateTask(it)
+                    scheduleTask(it)
+                    viewmodel.fetchTasks()
                 }
             }
         }
     }
 
-    private fun fetchTasksGoogle(it: UserModel, callback: () -> Unit) {
-        val eventsList = CalendarHelper.fetchGoogleCalendarEvents(
-            this@MainActivity, it.email
-        )
-        Log.d(TAG, "initViews: eventsList.size = ${eventsList.size}")
+    private fun setupUserInitial(it: UserModel) {
 
         if (it.userId == it.groupId) {
-            viewmodel.createNewGroup(it.groupId)
-            viewmodel.addMember(
-                it.groupId, GroupMember(it.groupId, getAndroidId(), it.groupId, it.location)
+            val newTeam = GroupItem(
+                id = it.groupId, createdBy = it.groupId, createdAt = System.currentTimeMillis()
             )
-            viewmodel.addTaskList(it.groupId, eventsList)
+            viewmodel.createNewGroup(newTeam)
+            uploadTasks(it)
         } else {
-            viewmodel.addMember(
-                it.groupId, GroupMember(it.userId, getAndroidId(), it.groupId, it.location)
-            )
-            viewmodel.fetchTasks(it.groupId)
+            viewmodel.fetchTasks()
         }
 
-        /* val futureEvents = sortFutureEvents(eventsList)
+        viewmodel.createNewUser(it)
+        viewmodel.addMember(
+            GroupMember(it.userId, getAndroidId(), it.groupId, it.location)
+        )
 
-         futureEvents.forEach { event ->
-             scheduleEvent(event)
-         }*/
+        /*val futureEvents = sortFutureEvents(eventsList)
 
-        callback.invoke()
+        futureEvents.forEach { event ->
+            scheduleEvent(event)
+        }*/
+    }
+
+    private fun uploadTasks(it: UserModel) {
+        val eventsList = CalendarHelper.fetchGoogleCalendarEvents(this@MainActivity, it)
+        viewmodel.addTaskList(eventsList)
     }
 
 
@@ -226,14 +237,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
     }
 
+
     override fun initListeners(view: View) {
 
         binding.btnSyncTask.setOnClickListener {
-            SessionManager.getObject(Const.USER_INFO, UserModel::class.java)?.let {
-                fetchTasksGoogle(it) {
-                    showToast("Task synced successfully")
-                }
-            }
+            val user = getUserInfo()
+            if (user.role == Const.ROLE_PARENT) uploadTasks(getUserInfo())
+            else viewmodel.fetchTasks()
+
+            showToast("Task synced successfully")
         }
 
         binding.btnSetting.setOnClickListener {
@@ -242,8 +254,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
         binding.btnAddTask.setOnClickListener {
             showAddTask(members = groupMembers) {
-                viewmodel.addTask(Const.TASK_GROUP_ID, it)
-                scheduleEvent(it)
+                viewmodel.addTask(it)
+                scheduleTask(it)
             }
         }
 
@@ -251,7 +263,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             when (it) {
                 is TaskCallback.OnDeleteClick -> {
                     deleteDialog {
-                        viewmodel.deleteTask(Const.TASK_GROUP_ID, it.task.taskId)
+                        viewmodel.deleteTask(it.task.taskId)
                         adapter.removeItem(it.position)
                         cancelScheduledAlarm(it.task.taskId)
                     }
@@ -261,8 +273,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                     Log.d(TAG, "initListeners: click task")
                     showAddTask(it.task, groupMembers) { newItem ->
                         adapter.editItem(it.position, newItem)
-                        viewmodel.updateTask(Const.TASK_GROUP_ID, newItem)
-                        scheduleEvent(it.task)
+                        viewmodel.updateTask(newItem)
+                        scheduleTask(it.task)
                     }
                 }
 

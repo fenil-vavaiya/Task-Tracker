@@ -2,11 +2,15 @@ package com.example.googletaskproject.data.repository
 
 import android.util.Log
 import com.example.googletaskproject.data.local.dao.TaskDao
-import com.example.googletaskproject.data.model.Group
+import com.example.googletaskproject.data.model.GroupItem
 import com.example.googletaskproject.data.model.GroupMember
+import com.example.googletaskproject.data.model.MemberList
 import com.example.googletaskproject.data.model.TaskItem
+import com.example.googletaskproject.data.model.UserModel
 import com.example.googletaskproject.utils.Const.TAG
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.TaskCompletionSource
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -22,41 +26,42 @@ import javax.inject.Inject
 class TaskRepository @Inject constructor(
     private val firestore: FirebaseFirestore, private val taskDao: TaskDao
 ) {
+    // group related business logic
 
+    fun createNewGroup(
+        groupItem: GroupItem
+    ): Task<Void> {
+        val db = FirebaseFirestore.getInstance()
+        val teamRef = db.collection("teams").document(groupItem.id) // Use provided ID
 
-    fun createGroup(groupId: String): Task<Void> {
-        Log.d(TAG, "createGroup: groupId = $groupId")
-
-        val groupData = hashMapOf(
-            "members" to listOf<Map<String, Any>>() // Empty list (to be updated later)
-        )
-
-        return FirebaseFirestore.getInstance().collection("groups").document(groupId)
-            .set(groupData)
+        return db.runTransaction { transaction ->
+            transaction.set(teamRef, groupItem)
+            null // Firestore transactions require a return value
+        }
     }
 
-
-    fun addMemberToGroup(groupId: String, newMember: GroupMember): Task<Void> {
-        val groupRef = firestore.collection("groups").document(groupId)
+    fun addMemberToTeam(teamId: String, newMember: GroupMember): Task<Void> {
+        val teamRef = firestore.collection("teams").document(teamId)
 
         return firestore.runTransaction { transaction ->
-            val snapshot = transaction.get(groupRef)
-            val currentMembers = snapshot.toObject(Group::class.java)?.members ?: emptyList()
+            val snapshot = transaction.get(teamRef)
+            val currentMembers = snapshot.toObject(MemberList::class.java)?.members ?: emptyList()
 
-            // Convert to mutable list and add the new member
+            // Convert to mutable list and add the new member if not already present
             val updatedMembers = currentMembers.toMutableList()
-            if (!updatedMembers.any { it.androidId == newMember.androidId }) { // Prevent duplicates
+            if (!updatedMembers.any { it.memberId == newMember.memberId }) { // Prevent duplicates
                 updatedMembers.add(newMember)
             }
 
             // Update Firestore
-            transaction.update(groupRef, "members", updatedMembers)
+            transaction.update(teamRef, "members", updatedMembers)
             null
         }
     }
 
+
     fun getGroupMembers(groupId: String): Flow<List<GroupMember>> = channelFlow {
-        val listener = firestore.collection("groups").document(groupId)
+        val listener = firestore.collection("teams").document(groupId)
             .addSnapshotListener { document, error ->
                 if (error != null) {
                     Log.e(TAG, "Error fetching members: ${error.message}")
@@ -76,7 +81,7 @@ class TaskRepository @Inject constructor(
                         GroupMember(
                             memberId = memberMap["memberId"] as? String ?: "",
                             androidId = memberMap["androidId"] as? String ?: "",
-                            parentId = memberMap["parentId"] as? String ?: "",
+                            groupId = memberMap["groupId"] as? String ?: "",
                             location = memberMap["location"] as? String ?: "",
                         )
                     } catch (e: Exception) {
@@ -92,6 +97,54 @@ class TaskRepository @Inject constructor(
         awaitClose { listener.remove() }
     }
 
+    fun getTeamById(teamId: String): Task<GroupItem> {
+        val db = FirebaseFirestore.getInstance()
+        val teamRef = db.collection("teams").document(teamId)
+
+        return teamRef.get().continueWithTask { task ->
+            val document = task.result
+            Log.d(TAG, "getTeamById: data = ${document.data.toString()}")
+            if (task.isSuccessful && document != null && document.exists()) {
+                val group = document.toObject(GroupItem::class.java)
+                return@continueWithTask group?.let { Tasks.forResult(it) }
+                    ?: Tasks.forException(Exception("Group data is null"))
+            } else {
+                return@continueWithTask Tasks.forException(Exception("Group not found"))
+            }
+        }
+    }
+
+
+    // User related business logic
+
+    fun createNewUser(userItem: UserModel): Task<Void> {
+        val db = FirebaseFirestore.getInstance()
+        val userRef = db.collection("users").document(userItem.email) // Use provided ID
+
+        return db.runTransaction { transaction ->
+            transaction.set(userRef, userItem)
+            null // Firestore transactions require a return value
+        }
+    }
+
+    fun getUserById(userId: String): Task<UserModel> {
+        val db = FirebaseFirestore.getInstance()
+        val userRef = db.collection("users").document(userId)
+
+        return userRef.get().continueWithTask { task ->
+            val document = task.result
+            if (document != null && document.exists()) {
+                val user = document.toObject(UserModel::class.java)
+                user?.let { Tasks.forResult(it) }
+                    ?: Tasks.forException(Exception("User data is null"))
+            } else {
+                Tasks.forException(Exception("User not found"))
+            }
+        }
+    }
+
+    // task related business logic
+
 
     fun getTasks(groupId: String): Flow<List<TaskItem>> = channelFlow {
         // Emit cached tasks first (from Room DB)
@@ -99,7 +152,8 @@ class TaskRepository @Inject constructor(
         send(cachedTasks) // Use `send()` inside `channelFlow`
 
         // Fetch data from Firestore
-        val listener = firestore.collection("groups").document(groupId).collection("tasks")
+
+        val listener = firestore.collection("teams").document(groupId).collection("teamTasks")
             .orderBy("startTime", Query.Direction.ASCENDING)
             .addSnapshotListener { documents, error ->
                 if (error != null) {
@@ -134,63 +188,29 @@ class TaskRepository @Inject constructor(
                 }
             }
         // Close the flow when the coroutine is canceled
-        awaitClose { listener.remove() }
+        awaitClose {
+            Log.d(TAG, "Firestore listener removed")
+            listener.remove()
+        }
+
     }
-
-    fun getTasksWithCaching(groupId: String): Flow<List<TaskItem>> = channelFlow {
-        val listener = firestore.collection("groups").document(groupId).collection("tasks")
-            .orderBy("startTime", Query.Direction.ASCENDING)
-            .addSnapshotListener { documents, error ->
-                if (error != null) {
-                    Log.e(TAG, "Error fetching tasks: ${error.message}")
-                    return@addSnapshotListener
-                }
-
-                if (documents != null) {
-                    val tasks = documents.map { doc ->
-                        TaskItem(
-                            taskId = doc.getLong("taskId")?.toInt() ?: 0,
-                            title = doc.getString("title") ?: "",
-                            description = doc.getString("description") ?: "",
-                            startTime = doc.getLong("startTime") ?: 0L,
-                            taskDuration = doc.getLong("taskDuration")?.toInt() ?: 0,
-                            reminderBefore = doc.getLong("reminderBefore")?.toInt() ?: 0,
-                            calendarId = doc.getString("calendarId") ?: "",
-                            location = doc.getString("location") ?: "",
-                            assignedTo = doc.getString("assignedTo") ?: "",
-                            isCompleted = doc.getBoolean("completed") ?: false,
-                        )
-                    }
-
-                    // Send updated tasks
-                    trySend(tasks).isSuccess
-                }
-            }
-
-        // Close the flow when the coroutine is canceled
-        awaitClose { listener.remove() }
-    }
-
 
     // 🔹 Insert a new task (Firestore + Room)
-    suspend fun insertTask(groupId: String, task: TaskItem) {
+    suspend fun insertTask(teamId: String, task: TaskItem) {
         try {
-            // Insert task into Room first
-            val insertedTaskId = taskDao.insertTask(task.toTaskEntity()) // Returns new taskId
-            val updatedTask = task.copy(taskId = insertedTaskId.toInt()) // Update taskId
+            val taskId = taskDao.insertTask(task.toTaskEntity()) // Insert into Room and get ID
+            val updatedTask = task.copy(taskId = taskId.toInt()) // Update taskId from Room
 
-            val groupRef = firestore.collection("groups").document(groupId)
+            val teamRef = firestore.collection("teams").document(teamId)
+            val taskRef = teamRef.collection("teamTasks").document(updatedTask.taskId.toString())
 
-            // Ensure the group document exists before adding tasks
-            groupRef.get().addOnSuccessListener { document ->
+            // Ensure the team document exists before adding a task
+            teamRef.get().addOnSuccessListener { document ->
                 if (!document.exists()) {
-                    groupRef.set(mapOf("createdAt" to System.currentTimeMillis())) // Create the group
+                    teamRef.set(mapOf("createdAt" to System.currentTimeMillis())) // Create team if missing
                 }
 
-                // Now insert the task using the correct (latest) taskId
-                groupRef.collection("tasks")
-                    .document(updatedTask.taskId.toString()) // Use updated taskId
-                    .set(updatedTask, SetOptions.merge()) // Prevent overwriting other fields
+                taskRef.set(updatedTask, SetOptions.merge()) // Merge to avoid overwriting
                     .addOnSuccessListener {
                         Log.d(TAG, "Task inserted successfully in Firestore")
                     }
@@ -204,53 +224,62 @@ class TaskRepository @Inject constructor(
         }
     }
 
-    suspend fun insertTasks(groupId: String, tasks: List<TaskItem>) {
+    suspend fun insertTasks(teamId: String, tasks: List<TaskItem>): Task<Void> {
+        val taskCompletionSource = TaskCompletionSource<Void>()
+
         try {
             taskDao.clearTasks()
-            // Insert all tasks into Room and get their generated IDs
-            val insertedTaskIds =
-                taskDao.insertTasks(tasks.map { it.toTaskEntity() }) // Returns List<Long>
 
-            // Update taskId for each task using the new Room-generated IDs
+            // Insert tasks into Room and get their IDs
+            val insertedTaskIds = taskDao.insertTasks(tasks.map { it.toTaskEntity() })
+
+            // Update taskId using the new Room-generated IDs
             val updatedTasks = tasks.mapIndexed { index, task ->
                 task.copy(taskId = insertedTaskIds[index].toInt())
             }
 
-            val groupRef = firestore.collection("groups").document(groupId)
+            val teamRef = firestore.collection("teams").document(teamId)
 
-            // Ensure the group document exists before adding tasks
-            groupRef.get().addOnSuccessListener { document ->
+            // Ensure the team document exists before adding tasks
+            teamRef.get().addOnSuccessListener { document ->
                 if (!document.exists()) {
-                    groupRef.set(mapOf("createdAt" to System.currentTimeMillis())) // Create the group
+                    teamRef.set(mapOf("createdAt" to System.currentTimeMillis()))
                 }
 
-                // Batch write to Firestore for efficiency
+                // Reference to teamTasks subcollection
                 val batch = firestore.batch()
                 updatedTasks.forEach { task ->
-                    val taskRef = groupRef.collection("tasks").document(task.taskId.toString())
+                    val taskRef = teamRef.collection("teamTasks").document(task.taskId.toString())
                     batch.set(taskRef, task, SetOptions.merge())
                 }
 
                 batch.commit()
                     .addOnSuccessListener {
                         Log.d(TAG, "All tasks inserted successfully in Firestore")
+                        taskCompletionSource.setResult(null) // Success
                     }
                     .addOnFailureListener { e ->
                         Log.e(TAG, "Failed to insert tasks in Firestore: ${e.message}")
+                        taskCompletionSource.setException(e) // Pass error to callback
                     }
+            }.addOnFailureListener { e ->
+                Log.e(TAG, "Failed to fetch team document: ${e.message}")
+                taskCompletionSource.setException(e) // Pass Firestore fetch failure
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to insert tasks in Room: ${e.message}") // Handle Room errors
+            Log.e(TAG, "Failed to insert tasks in Room: ${e.message}")
+            taskCompletionSource.setException(e) // Handle Room errors
         }
-    }
 
+        return taskCompletionSource.task
+    }
 
     // 🔹 Update an existing task (Firestore + Room)
     suspend fun updateTask(groupId: String, task: TaskItem) {
         taskDao.updateTask(task.toTaskEntity()) // Update locally in Room
 
-        firestore.collection("groups").document(groupId).collection("tasks")
+        firestore.collection("teams").document(groupId).collection("teamTasks")
             .document(task.taskId.toString())
             .set(task, SetOptions.merge()) // Merge updates in Firestore
             .addOnFailureListener { e -> Log.e(TAG, "Failed to update task: ${e.message}") }
@@ -260,11 +289,10 @@ class TaskRepository @Inject constructor(
     suspend fun deleteTask(groupId: String, taskId: Int) {
         taskDao.deleteTask(taskId) // Delete locally from Room
 
-        firestore.collection("groups").document(groupId).collection("tasks")
+        firestore.collection("teams").document(groupId).collection("teamTasks")
             .document(taskId.toString()).delete()
             .addOnFailureListener { e -> Log.e(TAG, "Failed to delete task: ${e.message}") }
     }
-
 
     private fun TaskItem.toTaskEntity() = TaskItem(
         taskId,

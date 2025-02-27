@@ -1,5 +1,5 @@
 package com.example.googletaskproject.data.model
 
-data class Group(
+data class MemberList(
     val members: List<GroupMember> = emptyList()
 )

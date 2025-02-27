@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -32,32 +32,41 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvCheckBox"
-                style="@style/mediumText6"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginVertical="@dimen/_5sdp"
-                android:text="Parent"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toTopOf="@+id/etUserID"
-                app:layout_constraintEnd_toStartOf="@+id/switchChoice"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
-            <Switch
-                android:id="@+id/switchChoice"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/_15sdp"
-                android:layout_gravity="center"
-                android:checked="true"
-                android:thumb="@drawable/custom_thumb_1"
-                android:track="@drawable/custom_track"
-                app:layout_constraintBottom_toBottomOf="@+id/tvCheckBox"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tvCheckBox"
-                app:layout_constraintTop_toTopOf="@+id/tvCheckBox" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvCheckBox"
+                    style="@style/mediumText6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:text="Parent"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toTopOf="@+id/etUserID"
+                    app:layout_constraintEnd_toStartOf="@+id/switchChoice"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+                <Switch
+                    android:id="@+id/switchChoice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_15sdp"
+                    android:layout_gravity="center"
+                    android:checked="true"
+                    android:thumb="@drawable/custom_thumb_1"
+                    android:track="@drawable/custom_track"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvCheckBox"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tvCheckBox"
+                    app:layout_constraintTop_toTopOf="@+id/tvCheckBox" />
+            </LinearLayout>
+
 
             <EditText
                 android:id="@+id/etUserID"
@@ -72,17 +81,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvCheckBox" />
 
             <EditText
-                android:id="@+id/etParentId"
+                android:id="@+id/etGroupId"
                 style="@style/CustomEditTextStyleOneLine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Enter parent device ID"
-                android:textSize="@dimen/_10ssp"
+                android:textSize="@dimen/_6ssp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@+id/etLocation"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/etUserID" />
+
 
             <EditText
                 android:id="@+id/etLocation"
@@ -100,7 +110,7 @@
             <TextView
                 android:id="@+id/btnPositive"
                 style="@style/SimpleButtonNoPadding"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_60sdp"
                 android:layout_marginTop="@dimen/_10sdp"
@@ -114,6 +124,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/etLocation" />
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.cardview.widget.CardView>

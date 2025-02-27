@@ -8,31 +8,15 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Switch
-import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import com.example.googletaskproject.core.BaseActivity
-import com.example.googletaskproject.core.SessionManager
-import com.example.googletaskproject.data.model.UserModel
 import com.example.googletaskproject.databinding.ActivityPermissionBinding
-import com.example.googletaskproject.presentation.TaskViewmodel
 import com.example.googletaskproject.ui.screens.home.MainActivity
-import com.example.googletaskproject.utils.Const
-import com.example.googletaskproject.utils.extensions.scheduleEvent
-import com.example.googletaskproject.utils.helper.CalendarHelper
-import com.example.googletaskproject.utils.helper.CalendarHelper.sortFutureEvents
 import com.example.googletaskproject.utils.helper.PermissionHelper.areAllPermissionsGranted
 import com.example.googletaskproject.utils.helper.PermissionHelper.canScheduleExactAlarms
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-@AndroidEntryPoint
 class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
     private val permissionsStatus = hashMapOf<String, Boolean>()
-
-    private val viewmodel: TaskViewmodel by viewModels()
-
 
     override fun inflateBinding(layoutInflater: LayoutInflater)=  ActivityPermissionBinding.inflate(layoutInflater)
 
@@ -133,26 +117,6 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
     private fun updateNextButtonVisibility() {
         val allGranted = areAllPermissionsGranted(this)
         binding.btnNext.visibility = if (allGranted) View.VISIBLE else View.GONE
-        if (allGranted) {
-            CoroutineScope(Dispatchers.IO).launch {
-                if (areAllPermissionsGranted(this@PermissionActivity)) {
-                    val userInfo = SessionManager.getObject(Const.USER_INFO, UserModel::class.java)
-                    userInfo?.let {
-
-                        val eventsList = CalendarHelper.fetchGoogleCalendarEvents(this@PermissionActivity, userInfo.email)
-
-//                        viewmodel.updateAllEvents(eventsList)
-
-                        val futureEvents = sortFutureEvents(eventsList)
-
-                        futureEvents.forEach { event ->
-                            scheduleEvent(event)
-                        }
-                    }
-                }
-            }
-
-        }
     }
 
 

@@ -7,8 +7,8 @@ import android.view.View
 import android.widget.Toast
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.core.SessionManager
-import com.example.googletaskproject.databinding.ActivitySignInBinding
 import com.example.googletaskproject.data.model.UserModel
+import com.example.googletaskproject.databinding.ActivitySignInBinding
 import com.example.googletaskproject.ui.screens.home.MainActivity
 import com.example.googletaskproject.ui.screens.launcher.PermissionActivity
 import com.example.googletaskproject.utils.Const
@@ -63,9 +63,10 @@ class SignInActivity : BaseActivity<ActivitySignInBinding>() {
                 Log.d(TAG, "onActivityResult: photoUrl = ${account.photoUrl}")
                 account?.let {
                     SessionManager.putBoolean(Const.IS_LOGGED_IN, true)
+                    val userModel = UserModel(it.displayName!!, it.email!!, it.photoUrl.toString())
                     SessionManager.putObject(
                         Const.USER_INFO,
-                        UserModel(it.displayName!!, it.email!!, it.photoUrl.toString())
+                        userModel
                     )
                     if (!areAllPermissionsGranted(this)) {
                         startActivity(Intent(this, PermissionActivity::class.java))
@@ -79,6 +80,8 @@ class SignInActivity : BaseActivity<ActivitySignInBinding>() {
             }
         }
     }
+
+
 
     override fun inflateBinding(layoutInflater: LayoutInflater) =
         ActivitySignInBinding.inflate(layoutInflater)

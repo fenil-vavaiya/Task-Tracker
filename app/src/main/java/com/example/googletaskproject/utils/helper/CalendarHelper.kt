@@ -6,6 +6,7 @@ import android.provider.CalendarContract
 import androidx.core.database.getIntOrNull
 import com.example.googletaskproject.data.model.DayWiseEvent
 import com.example.googletaskproject.data.model.TaskItem
+import com.example.googletaskproject.data.model.UserModel
 import org.joda.time.DateTimeZone
 import org.joda.time.LocalDate
 import java.text.SimpleDateFormat
@@ -34,7 +35,7 @@ object CalendarHelper {
         return sectionedList
     }
 
-    fun fetchGoogleCalendarEvents(context: Context, email: String): List<TaskItem> {
+    fun fetchGoogleCalendarEvents(context: Context, userModel: UserModel): List<TaskItem> {
         val eventsList = mutableListOf<TaskItem>()
 
         val projection = arrayOf(
@@ -51,7 +52,7 @@ object CalendarHelper {
         )
 
         // Get the Calendar ID for the specified email
-        val calendarId = getCalendarIdForEmail(context, email)
+        val calendarId = getCalendarIdForEmail(context, userModel.email)
             ?: return emptyList() // Return empty if no calendar found for the email
 
         val selection = "${CalendarContract.Events.CALENDAR_ID} = ?"
@@ -89,7 +90,8 @@ object CalendarHelper {
                         description = description ?: "",
                         startTime = startTime,
                         calendarId = calendarId.toString(),
-                        location = location ?: "",
+                        location = location ?: userModel.location,
+                        assignedTo = userModel.userId
                     )
                 )
             }
