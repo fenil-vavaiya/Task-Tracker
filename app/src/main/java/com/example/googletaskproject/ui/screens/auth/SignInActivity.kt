@@ -1,7 +1,6 @@
 package com.example.googletaskproject.ui.screens.auth
 
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
@@ -13,7 +12,6 @@ import com.example.googletaskproject.ui.screens.home.MainActivity
 import com.example.googletaskproject.ui.screens.launcher.PermissionActivity
 import com.example.googletaskproject.utils.Const
 import com.example.googletaskproject.utils.Const.RC_SIGN_IN
-import com.example.googletaskproject.utils.Const.TAG
 import com.example.googletaskproject.utils.helper.PermissionHelper.areAllPermissionsGranted
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -34,18 +32,14 @@ class SignInActivity : BaseActivity<ActivitySignInBinding>() {
     }
 
     private fun googleLogin() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .build()
+        val gso =
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
 
-        googleApiClient = GoogleApiClient.Builder(this)
-            .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-            .build()
+        googleApiClient = GoogleApiClient.Builder(this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build()
 
         val intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
         startActivityForResult(
-            intent,
-            RC_SIGN_IN
+            intent, RC_SIGN_IN
         )
 
     }
@@ -58,15 +52,13 @@ class SignInActivity : BaseActivity<ActivitySignInBinding>() {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)
-                Log.d(TAG, "onActivityResult: displayName = ${account.displayName}")
-                Log.d(TAG, "onActivityResult: email = ${account.email}")
-                Log.d(TAG, "onActivityResult: photoUrl = ${account.photoUrl}")
+
                 account?.let {
                     SessionManager.putBoolean(Const.IS_LOGGED_IN, true)
-                    val userModel = UserModel(it.displayName!!, it.email!!, it.photoUrl.toString())
+                    val userModel =
+                        UserModel(it.displayName ?: "", it.email ?: "", it.photoUrl.toString())
                     SessionManager.putObject(
-                        Const.USER_INFO,
-                        userModel
+                        Const.USER_INFO, userModel
                     )
                     if (!areAllPermissionsGranted(this)) {
                         startActivity(Intent(this, PermissionActivity::class.java))
@@ -80,7 +72,6 @@ class SignInActivity : BaseActivity<ActivitySignInBinding>() {
             }
         }
     }
-
 
 
     override fun inflateBinding(layoutInflater: LayoutInflater) =

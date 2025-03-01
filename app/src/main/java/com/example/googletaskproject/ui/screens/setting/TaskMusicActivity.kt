@@ -1,18 +1,18 @@
 package com.example.googletaskproject.ui.screens.setting
 
-import android.media.MediaPlayer
 import android.view.LayoutInflater
 import android.view.View
 import com.example.googletaskproject.R
 import com.example.googletaskproject.core.BaseActivity
-import com.example.googletaskproject.databinding.ActivityTaskMusicBinding
 import com.example.googletaskproject.data.model.TaskRingtoneModel
+import com.example.googletaskproject.databinding.ActivityTaskMusicBinding
 import com.example.googletaskproject.ui.screens.setting.adapter.TaskMusicAdapter
+import com.example.googletaskproject.utils.helper.MediaPlayerUtils
 
 class TaskMusicActivity : BaseActivity<ActivityTaskMusicBinding>() {
 
     private val adapter = TaskMusicAdapter()
-
+    private lateinit var mediaPlayer: MediaPlayerUtils
     override fun inflateBinding(layoutInflater: LayoutInflater) =
         ActivityTaskMusicBinding.inflate(layoutInflater)
 
@@ -28,31 +28,26 @@ class TaskMusicActivity : BaseActivity<ActivityTaskMusicBinding>() {
         )
         binding.rv.adapter = adapter
         adapter.setData(ringtoneList)
+        mediaPlayer = MediaPlayerUtils(this)
     }
 
     override fun initListeners(view: View) {
         binding.btnBack.setOnClickListener { finish() }
         adapter.setCallback {
-            playRingtoneFromRaw(it.assetName)
+            handlerPlayer(it)
         }
     }
 
 
-    private fun playRingtoneFromRaw(rawResId: Int) {
-        try {
-            val assetFileDescriptor = resources.openRawResourceFd(rawResId) ?: return
-            val mediaPlayer = MediaPlayer().apply {
-                setDataSource(
-                    assetFileDescriptor.fileDescriptor,
-                    assetFileDescriptor.startOffset,
-                    assetFileDescriptor.length
-                )
-                prepare()
-                start()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+    private fun handlerPlayer(
+        item: TaskRingtoneModel
+    ) {
+        mediaPlayer.pauseMediaPlayer()
+        mediaPlayer.playTaskMusic(item.assetName)
     }
 
+    override fun onDestroy() {
+        mediaPlayer.destroyMediaPlayer()
+        super.onDestroy()
+    }
 }

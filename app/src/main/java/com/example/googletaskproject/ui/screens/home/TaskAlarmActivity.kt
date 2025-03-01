@@ -17,6 +17,7 @@ import com.example.googletaskproject.data.model.TaskRingtoneModel
 import com.example.googletaskproject.databinding.ActivityTaskAlarmBinding
 import com.example.googletaskproject.presentation.TaskViewmodel
 import com.example.googletaskproject.utils.Const
+import com.example.googletaskproject.utils.extensions.cancelScheduledAlarm
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
@@ -53,23 +54,20 @@ class TaskAlarmActivity : AppCompatActivity() {
     private fun initView() {
         intent.getStringExtra(Const.TASK_DATA)?.let {
             task = Gson().fromJson(it, TaskItem::class.java)
-
             binding.taskTitleTv.text = task.title
-            binding.descriptionTv.text = task.description
             binding.startTimeTv.text = "Starting at ${convertTimestampToTime(task.startTime)}"
-
         }
     }
 
     private fun convertTimestampToTime(timestamp: Long): String {
         val formatter = DateTimeFormatter.ofPattern("hh:mm a").withZone(ZoneId.systemDefault())
-
         return formatter.format(Instant.ofEpochMilli(timestamp))
     }
 
     private fun initListener() {
         binding.btnStart.setOnClickListener {
             stopAlarmSound() // Stop sound when alarm is dismissed
+            cancelScheduledAlarm(task.taskId)
             task.isCompleted = true
             viewmodel.updateTask(task)
             finish()
@@ -77,6 +75,7 @@ class TaskAlarmActivity : AppCompatActivity() {
 
         binding.btnReschedule.setOnClickListener {
             stopAlarmSound() // Stop sound when alarm is dismissed
+            cancelScheduledAlarm(task.taskId)
             val intent = Intent(this, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 putExtra(Const.FROM_ALARM, true)

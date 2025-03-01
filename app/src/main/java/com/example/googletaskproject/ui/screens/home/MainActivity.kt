@@ -95,6 +95,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     }
 
     private fun initializeAppEnvironment(userInfo: UserModel) {
+        Log.d(
+            TAG,
+            "initializeAppEnvironment: userInfo.userId.isNotEmpty() = ${userInfo.userId.isNotEmpty()}"
+        )
+        Log.d(TAG, "initializeAppEnvironment: userInfo.userId = ${userInfo.userId}")
         if (userInfo.userId.isNotEmpty()) {
             viewmodel.tasksLiveData.observe(this) { it ->
                 Log.d(TAG, "initViews: $it")
@@ -120,6 +125,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 Log.d(TAG, "initializeAppEnvironment: groupMembers list = $it")
                 groupMembers = it
             }
+
             viewmodel.fetchTasks()
             viewmodel.fetchGroupMembers()
 
@@ -129,7 +135,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
             handleIntent()
             handleSpinner()
-            //                    startOverlayService()
+            startOverlayService()
         }
     }
 
@@ -217,8 +223,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         viewmodel.addMember(
             GroupMember(it.userId, getAndroidId(), it.groupId, it.location)
         )
-        saveFCMToken(it)
-        /*val futureEvents = sortFutureEvents(eventsList)
+        saveFCMToken(it)/*val futureEvents = sortFutureEvents(eventsList)
 
         futureEvents.forEach { event ->
             scheduleEvent(event)

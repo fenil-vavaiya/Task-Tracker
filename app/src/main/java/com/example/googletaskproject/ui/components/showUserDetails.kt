@@ -30,9 +30,7 @@ fun Context.showUserDetails(
                 return@setOnClickListener
             }
 
-            if (!binding.switchChoice.isChecked && binding.etGroupId.text.toString().trim()
-                    .isEmpty()
-            ) {
+            if (!binding.switchChoice.isChecked && binding.etGroupId.text.toString().trim().isEmpty()) {
                 showToast("Please enter your group ID")
                 return@setOnClickListener
             }
@@ -49,22 +47,35 @@ fun Context.showUserDetails(
                 userModel.groupId = binding.etUserID.text.toString().trim()
                 userModel.role = Const.ROLE_PARENT
 
+                viewmodel.isTeamExists(userModel.groupId) { exists ->
+                    Log.d(TAG, "showUserDetails: etGroupId = ${userModel.groupId}")
+                    Log.d(TAG, "showUserDetails: exists = $exists")
 
-                SessionManager.putObject(Const.USER_INFO, userModel)
-                callback(userModel)
-                dialog.dismiss()
+                    if (exists) {
+                        showToast("This group ID is taken.")
+                        return@isTeamExists // Stops execution inside the lambda
+                    }
+
+                    // Proceed only if group ID is valid
+                    SessionManager.putObject(Const.USER_INFO, userModel)
+                    callback(userModel)
+                    dialog.dismiss()
+                }
 
             } else {  // User is child
                 userModel.role = Const.ROLE_CHILD
                 userModel.groupId = binding.etGroupId.text.toString().trim()
 
-                viewmodel.isTeamExists(binding.etGroupId.text.toString().trim()) { exists ->
-                    Log.d(TAG, "showUserDetails: etGroupId = ${binding.etGroupId.text.toString().trim()}")
+                viewmodel.isTeamExists(userModel.groupId) { exists ->
+                    Log.d(TAG, "showUserDetails: etGroupId = ${userModel.groupId}")
                     Log.d(TAG, "showUserDetails: exists = $exists")
+
                     if (!exists) {
                         showToast("Please enter a valid group ID")
-                        return@isTeamExists // Stops execution here if group ID is invalid
+                        return@isTeamExists // Stops execution inside the lambda
                     }
+
+                    // Proceed only if group ID is valid
                     SessionManager.putObject(Const.USER_INFO, userModel)
                     callback(userModel)
                     dialog.dismiss()
@@ -73,3 +84,4 @@ fun Context.showUserDetails(
         }
     }.show()
 }
+
