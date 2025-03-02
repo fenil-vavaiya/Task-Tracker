@@ -11,7 +11,7 @@ import com.example.googletaskproject.data.model.TaskItem
 import com.example.googletaskproject.data.model.UserModel
 import com.example.googletaskproject.data.repository.TaskRepository
 import com.example.googletaskproject.utils.Const.TAG
-import com.example.googletaskproject.utils.helper.getUserInfo
+import com.example.googletaskproject.utils.helper.UserInfoHelper.getUserInfo
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

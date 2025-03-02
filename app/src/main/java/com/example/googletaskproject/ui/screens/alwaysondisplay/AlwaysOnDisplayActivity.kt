@@ -7,12 +7,17 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.googletaskproject.R
+import com.example.googletaskproject.core.state.TypeState
 import com.example.googletaskproject.databinding.ActivityAlwaysOnDisplayBinding
 import com.example.googletaskproject.presentation.TaskViewmodel
+import com.example.googletaskproject.ui.screens.home.adapter.TaskListAdapter
+import com.example.googletaskproject.utils.Const.TAG
+import com.example.googletaskproject.utils.helper.CalendarHelper.filterEventsByExactDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +36,7 @@ class AlwaysOnDisplayActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAlwaysOnDisplayBinding
     private var job: Job? = null
     private val viewmodel: TaskViewmodel by viewModels()
-
+    private val adapter = TaskListAdapter()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
@@ -45,16 +50,16 @@ class AlwaysOnDisplayActivity : AppCompatActivity() {
         registerReceiver(batteryReceiver, iFilter)
 
         startUpdatingTime()
-
+        binding.rv.adapter = adapter
         binding.dateTv.text = LocalDate().toString("EEE, MMMM dd")
-
-        /*viewmodel.todayEvents.observe(this) {
-            binding.rv.adapter = DayEventListAdapter(it) {
-
-            }
-        }*/
-
-
+        viewmodel.tasksLiveData.observe(this) {
+            Log.d(TAG, "onCreate: size = ${it.size}")
+            val dataList = filterEventsByExactDate(it, LocalDate())
+            Log.d(TAG, "onCreate: today size = ${dataList.size}")
+            adapter.changeState(TypeState.UsageState)
+            adapter.setData(dataList)
+        }
+        viewmodel.fetchTasks()
     }
 
     private fun startUpdatingTime() {

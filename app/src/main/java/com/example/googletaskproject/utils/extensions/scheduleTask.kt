@@ -5,8 +5,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import com.example.googletaskproject.data.model.TaskItem
 import com.example.googletaskproject.utils.Const
+import com.example.googletaskproject.utils.Const.TAG
 import com.example.googletaskproject.utils.receiver.EventAlarmReceiver
 import com.google.gson.Gson
 
@@ -21,6 +23,8 @@ fun Context.scheduleTask(taskItem: TaskItem) {
         intent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
+
+    Log.d(TAG, "scheduleTask: taskId = ${taskItem.taskId}")
 
     val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
     alarmManager.cancel(pendingIntent) // Cancel existing alarm (if any)
@@ -47,7 +51,7 @@ private fun scheduleAlarm(
 
 fun Context.cancelScheduledAlarm(taskId: Int) {
     val intent = Intent(this, EventAlarmReceiver::class.java)
-
+    Log.d(TAG, "cancelScheduledAlarm: taskId = ${taskId}")
     val pendingIntent = PendingIntent.getBroadcast(
         this,
         taskId, // Must match the taskId used in scheduling

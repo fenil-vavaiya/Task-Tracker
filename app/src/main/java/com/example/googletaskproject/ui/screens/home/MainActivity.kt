@@ -14,10 +14,14 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.MutableLiveData
 import com.example.googletaskproject.R
 import com.example.googletaskproject.background.OverlayService
 import com.example.googletaskproject.core.BaseActivity
 import com.example.googletaskproject.core.SessionManager
+import com.example.googletaskproject.core.SessionManager.removeScheduledTask
+import com.example.googletaskproject.core.SessionManager.saveTaskAsScheduled
+import com.example.googletaskproject.core.SessionManager.wasPreviouslyScheduled
 import com.example.googletaskproject.core.state.TypeState
 import com.example.googletaskproject.data.model.GroupItem
 import com.example.googletaskproject.data.model.GroupMember
@@ -39,7 +43,7 @@ import com.example.googletaskproject.utils.extensions.scheduleTask
 import com.example.googletaskproject.utils.extensions.showOverlayPermissionDialog
 import com.example.googletaskproject.utils.helper.CalendarHelper
 import com.example.googletaskproject.utils.helper.CalendarHelper.filterEventsByExactDate
-import com.example.googletaskproject.utils.helper.getUserInfo
+import com.example.googletaskproject.utils.helper.UserInfoHelper.getUserInfo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -59,7 +63,7 @@ import java.util.Locale
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
-    private var groupMembers: List<GroupMember> = emptyList()
+    private var groupMembers = MutableLiveData<List<GroupMember>>()
     private var intentService: Intent? = null
     private val viewmodel: TaskViewmodel by viewModels()
     private val adapter = TaskListAdapter()
@@ -91,7 +95,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 initializeAppEnvironment(userInfo)
             }
         }
-
     }
 
     private fun initializeAppEnvironment(userInfo: UserModel) {
@@ -99,31 +102,32 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             TAG,
             "initializeAppEnvironment: userInfo.userId.isNotEmpty() = ${userInfo.userId.isNotEmpty()}"
         )
-        Log.d(TAG, "initializeAppEnvironment: userInfo.userId = ${userInfo.userId}")
         if (userInfo.userId.isNotEmpty()) {
             viewmodel.tasksLiveData.observe(this) { it ->
-                Log.d(TAG, "initViews: $it")
                 val dataList = filterEventsByExactDate(it, LocalDate())
-                Log.d(TAG, "initViews: today task = $dataList")
                 binding.spinnerMode.setSelection(if (dataList.isEmpty()) 2 else 0)
 
                 binding.noDataTv.visibility = if (dataList.isEmpty()) View.VISIBLE else View.GONE
                 adapter.setData(dataList)
 
-
-                it.forEach {
-                    if (it.assignedTo == getUserInfo().userId && it.startTime >= System.currentTimeMillis()) {
-                        Log.d(TAG, "initializeAppEnvironment: future task matched ")
-                        scheduleTask(it)
-                    } else {
-                        cancelScheduledAlarm(it.taskId)
+                it.forEach { task ->
+                    val reminderTime = task.reminderBefore.toLong().takeIf { it >= 0 } ?: 0
+                    val scheduledTime = task.startTime - (reminderTime * 60 * 1000)
+                    Log.d(TAG, "initializeAppEnvironment: task = $task")
+                    if (task.assignedTo == getUserInfo().userId && scheduledTime >= System.currentTimeMillis()) {
+                        scheduleTask(task)
+                        saveTaskAsScheduled(task.taskId)  // ✅ Store taskId in SharedPreferences
+                        Log.d(TAG, "initializeAppEnvironment: task scheduled")
+                    } else if (wasPreviouslyScheduled(task.taskId)) {
+                        cancelScheduledAlarm(task.taskId)
+                        removeScheduledTask(task.taskId)  // ❌ Remove from SharedPreferences after canceling
+                        Log.d(TAG, "initializeAppEnvironment: scheduled task removed")
                     }
                 }
             }
 
             viewmodel.groupMembers.observe(this) {
-                Log.d(TAG, "initializeAppEnvironment: groupMembers list = $it")
-                groupMembers = it
+                groupMembers.value = it
             }
 
             viewmodel.fetchTasks()
@@ -200,7 +204,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             task?.let {
                 showAddTask(task, groupMembers) {
                     viewmodel.updateTask(it)
-                    scheduleTask(it)
                     viewmodel.fetchTasks()
                 }
             }
@@ -271,7 +274,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             val user = getUserInfo()
             if (user.role == Const.ROLE_PARENT) uploadTasks(getUserInfo())
             else viewmodel.fetchTasks()
-
             showToast("Task synced successfully")
         }
 
@@ -296,7 +298,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 }
 
                 is TaskCallback.OnEditClick -> {
-                    Log.d(TAG, "initListeners: click task")
                     showAddTask(it.task, groupMembers) { newItem ->
                         adapter.editItem(it.position, newItem)
                         viewmodel.updateTask(newItem)

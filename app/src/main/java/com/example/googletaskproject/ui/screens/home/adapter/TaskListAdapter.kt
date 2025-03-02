@@ -20,7 +20,6 @@ class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.DayEventListViewHol
     private lateinit var callback: (TaskCallback) -> Unit
 
     fun setData(list: List<TaskItem>) {
-        Log.d(TAG, "setData: list.size = ${list.size}")
         this.dataList = list
         notifyDataSetChanged()
     }

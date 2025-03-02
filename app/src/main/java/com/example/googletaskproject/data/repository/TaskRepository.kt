@@ -202,27 +202,35 @@ class TaskRepository @Inject constructor(
             val updatedTask = task.copy(taskId = taskId.toInt()) // Update taskId from Room
 
             val teamRef = firestore.collection("teams").document(teamId)
-            val taskRef = teamRef.collection("teamTasks").document(updatedTask.taskId.toString())
+            val teamTasksRef = teamRef.collection("teamTasks")
+            val taskRef = teamTasksRef.document(updatedTask.taskId.toString())
 
             // Ensure the team document exists before adding a task
-            teamRef.get().addOnSuccessListener { document ->
-                if (!document.exists()) {
-                    teamRef.set(mapOf("createdAt" to System.currentTimeMillis())) // Create team if missing
-                }
+            teamRef.get()
+                .addOnSuccessListener { document ->
+                    if (!document.exists()) {
+                        teamRef.set(mapOf("createdAt" to System.currentTimeMillis())) // Create team if missing
+                    }
 
-                taskRef.set(updatedTask, SetOptions.merge()) // Merge to avoid overwriting
-                    .addOnSuccessListener {
-                        Log.d(TAG, "Task inserted successfully in Firestore")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e(TAG, "Failed to insert task in Firestore: ${e.message}")
-                    }
-            }
+                    // Directly insert/update the task document
+                    taskRef.set(updatedTask, SetOptions.merge())
+                        .addOnSuccessListener {
+                            Log.d(TAG, "Task inserted successfully in Firestore")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e(TAG, "Failed to insert task in Firestore: ${e.message}")
+                        }
+                }
+                .addOnFailureListener { e ->
+                    Log.e(TAG, "Failed to check team existence: ${e.message}")
+                }
 
         } catch (e: Exception) {
             Log.e(TAG, "Failed to insert task in Room: ${e.message}") // Handle Room errors
         }
     }
+
+
 
     suspend fun insertTasks(teamId: String, tasks: List<TaskItem>): Task<Void> {
         val taskCompletionSource = TaskCompletionSource<Void>()

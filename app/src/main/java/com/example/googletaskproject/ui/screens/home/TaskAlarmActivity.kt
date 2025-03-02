@@ -31,6 +31,7 @@ class TaskAlarmActivity : AppCompatActivity() {
     private val viewmodel: TaskViewmodel by viewModels()
     private var mediaPlayer: MediaPlayer? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
@@ -56,6 +57,7 @@ class TaskAlarmActivity : AppCompatActivity() {
             task = Gson().fromJson(it, TaskItem::class.java)
             binding.taskTitleTv.text = task.title
             binding.startTimeTv.text = "Starting at ${convertTimestampToTime(task.startTime)}"
+
         }
     }
 
@@ -70,20 +72,27 @@ class TaskAlarmActivity : AppCompatActivity() {
             cancelScheduledAlarm(task.taskId)
             task.isCompleted = true
             viewmodel.updateTask(task)
-            finish()
+            openMainAct(false)
+
         }
 
         binding.btnReschedule.setOnClickListener {
             stopAlarmSound() // Stop sound when alarm is dismissed
             cancelScheduledAlarm(task.taskId)
-            val intent = Intent(this, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                putExtra(Const.FROM_ALARM, true)
-                putExtra(Const.TASK_DATA, Gson().toJson(task))
-            }
-            startActivity(intent)
+            openMainAct(true)
         }
 
+
+    }
+
+    private fun openMainAct(isRescheduled: Boolean) {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(Const.FROM_ALARM, isRescheduled)
+            putExtra(Const.TASK_DATA, Gson().toJson(task))
+        }
+        startActivity(intent)
+        finish()
     }
 
     private fun playRingtoneFromRaw() {

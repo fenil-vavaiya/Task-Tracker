@@ -2,6 +2,7 @@ package com.example.googletaskproject.core
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.googletaskproject.R
 import com.example.googletaskproject.data.model.TaskRingtoneModel
 import com.example.googletaskproject.utils.Const
 import com.google.gson.Gson
@@ -18,13 +19,17 @@ object SessionManager {
      * Initialize SharedPreferences (call this in Application class)
      */
     fun init(context: Context) {
-        sharedPreferences = context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        sharedPreferences =
+            context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         editor = sharedPreferences.edit()
 
         if (!getBoolean(Const.IS_SESSION_SAVED)) {
             putString(Const.SELECTED_TIME_ZONE, "Auto (Device Time Zone)")
-            putString(Const.SLEEP_MODE_MESSAGE, "The device is standby. No active tasks are displayed")
-            putObject(Const.RINGTONE_MUSIC, TaskRingtoneModel("None", -1))
+            putString(
+                Const.SLEEP_MODE_MESSAGE,
+                "The device is standby. No active tasks are displayed"
+            )
+            putObject(Const.RINGTONE_MUSIC, TaskRingtoneModel("Ringtone 1", R.raw.ringtone_1))
             putBoolean(Const.IS_SESSION_SAVED, true)
         }
     }
@@ -52,9 +57,11 @@ object SessionManager {
         val json = gson.toJson(obj)
         editor.putString(key, json).apply()
     }
+
     inline fun <reified T> putList(key: String, list: List<T>) {
         editor.putString(key, Gson().toJson(list)).apply()
     }
+
     /**
      * Retrieve data with default values
      */
@@ -83,11 +90,25 @@ object SessionManager {
     }
 
 
-
     inline fun <reified T> getList(key: String): List<T> {
         val json = getString(key)
         return Gson().fromJson(json, object : TypeToken<List<T>>() {}.type) ?: emptyList()
     }
+
+
+    fun saveTaskAsScheduled(taskId: Int) {
+        putBoolean(taskId.toString(), true)
+    }
+
+    fun wasPreviouslyScheduled(taskId: Int): Boolean {
+        return sharedPreferences.contains(taskId.toString())
+    }
+
+    fun removeScheduledTask(taskId: Int) {
+        removeKey(taskId.toString())
+    }
+
+
     /**
      * Remove a specific key
      */
