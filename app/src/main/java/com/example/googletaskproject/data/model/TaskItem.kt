@@ -19,6 +19,7 @@ data class TaskItem(
     var location: String = "",
     var assignedTo: String = "",
     var isCompleted: Boolean = false,
+    var isReminderShown: Boolean = false,
 ) : Parcelable {
     fun toTaskItem() = TaskItem(
         taskId,
@@ -30,6 +31,7 @@ data class TaskItem(
         calendarId,
         location,
         assignedTo,
-        isCompleted
+        isCompleted,
+        isReminderShown
     )
 }

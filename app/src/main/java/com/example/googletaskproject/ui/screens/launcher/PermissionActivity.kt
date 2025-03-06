@@ -18,7 +18,8 @@ import com.example.googletaskproject.utils.helper.PermissionHelper.canScheduleEx
 class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
     private val permissionsStatus = hashMapOf<String, Boolean>()
 
-    override fun inflateBinding(layoutInflater: LayoutInflater)=  ActivityPermissionBinding.inflate(layoutInflater)
+    override fun inflateBinding(layoutInflater: LayoutInflater) =
+        ActivityPermissionBinding.inflate(layoutInflater)
 
 
     override fun initViews(view: View) {
@@ -48,6 +49,7 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
         binding.btnNext.setOnClickListener {
             if (areAllPermissionsGranted(this)) {
                 startActivity(Intent(this, MainActivity::class.java))
+                finish()
             }
         }
 

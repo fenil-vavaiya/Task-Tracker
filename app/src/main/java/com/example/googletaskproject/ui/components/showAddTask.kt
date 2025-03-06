@@ -1,5 +1,6 @@
 package com.example.googletaskproject.ui.components
 
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -11,6 +12,7 @@ import com.example.googletaskproject.R
 import com.example.googletaskproject.data.model.GroupMember
 import com.example.googletaskproject.data.model.TaskItem
 import com.example.googletaskproject.databinding.DialogAddTaskBinding
+import com.example.googletaskproject.utils.Const.TAG
 import com.example.googletaskproject.utils.extensions.context.createCustomDialog
 import com.example.googletaskproject.utils.extensions.context.showDateTimePicker
 import com.example.googletaskproject.utils.extensions.context.showToast
@@ -102,8 +104,17 @@ fun FragmentActivity.showAddTask(
                 taskItem.assignedTo = location?.memberId ?: ""
             }
 
-            taskItem.reminderBefore = binding.etReminderBefore.text.toString().trim().toIntOrNull() ?: 0
+            taskItem.reminderBefore =
+                binding.etReminderBefore.text.toString().trim().toIntOrNull() ?: 0
             taskItem.taskDuration = binding.etTaskDuration.text.toString().trim().toIntOrNull() ?: 0
+
+            taskItem.isReminderShown = false
+
+            if (taskItem.reminderBefore == 0) {
+                taskItem.isReminderShown = true
+            }
+
+            Log.d(TAG, "showAddTask: isReminderShown = ${taskItem.isReminderShown}")
 
             callback(taskItem)
             dialog.dismiss()

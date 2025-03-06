@@ -174,6 +174,7 @@ class TaskRepository @Inject constructor(
                             location = doc.getString("location") ?: "",
                             assignedTo = doc.getString("assignedTo") ?: "",
                             isCompleted = doc.getBoolean("completed") ?: false,
+                            isReminderShown = doc.getBoolean("reminderShown") ?: false,
                         )
                     }
 

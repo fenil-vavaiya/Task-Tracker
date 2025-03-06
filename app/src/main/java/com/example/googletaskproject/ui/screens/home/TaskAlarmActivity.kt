@@ -4,7 +4,10 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.view.WindowManager
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +20,9 @@ import com.example.googletaskproject.data.model.TaskRingtoneModel
 import com.example.googletaskproject.databinding.ActivityTaskAlarmBinding
 import com.example.googletaskproject.presentation.TaskViewmodel
 import com.example.googletaskproject.utils.Const
+import com.example.googletaskproject.utils.Const.TAG
 import com.example.googletaskproject.utils.extensions.cancelScheduledAlarm
+import com.example.googletaskproject.utils.extensions.scheduleTaskWithoutReminder
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
@@ -58,7 +63,23 @@ class TaskAlarmActivity : AppCompatActivity() {
             binding.taskTitleTv.text = task.title
             binding.startTimeTv.text = "Starting at ${convertTimestampToTime(task.startTime)}"
 
+            Log.d(TAG, "initView: !task.isReminderShown && task.reminderBefore > 0 = ${!task.isReminderShown && task.reminderBefore > 0}")
+            Log.d(TAG, "initView: task.isReminderShown = ${task.isReminderShown}")
+
+            binding.btnStart.visibility = if (task.isReminderShown) View.VISIBLE else View.GONE
+            binding.btnReschedule.visibility =
+                if (task.isReminderShown) View.VISIBLE else View.GONE
+
+            binding.btnDismiss.visibility =
+                if (!task.isReminderShown && task.reminderBefore > 0) View.VISIBLE else View.GONE
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Do nothing (blocks back press)
+            }
+        })
+
     }
 
     private fun convertTimestampToTime(timestamp: Long): String {
@@ -67,6 +88,15 @@ class TaskAlarmActivity : AppCompatActivity() {
     }
 
     private fun initListener() {
+        binding.btnDismiss.setOnClickListener {
+            stopAlarmSound()
+            cancelScheduledAlarm(task.taskId)
+            task.isReminderShown = true
+            viewmodel.updateTask(task)
+            scheduleTaskWithoutReminder(task)
+            finish()
+        }
+
         binding.btnStart.setOnClickListener {
             stopAlarmSound() // Stop sound when alarm is dismissed
             cancelScheduledAlarm(task.taskId)
@@ -114,8 +144,7 @@ class TaskAlarmActivity : AppCompatActivity() {
                     setAudioAttributes(
                         AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_ALARM)  // 🔥 Makes it play in silent mode
-                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                            .build()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()
                     )
                     isLooping = true
                     prepare()

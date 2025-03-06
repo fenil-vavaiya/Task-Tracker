@@ -300,6 +300,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 is TaskCallback.OnEditClick -> {
                     showAddTask(it.task, groupMembers) { newItem ->
                         adapter.editItem(it.position, newItem)
+                        Log.d(TAG, "initListeners: newItem = $newItem")
                         viewmodel.updateTask(newItem)
                     }
                 }

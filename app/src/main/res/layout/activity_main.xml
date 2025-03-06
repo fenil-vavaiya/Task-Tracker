@@ -24,7 +24,7 @@
             android:gravity="center"
             android:text="9:01"
             android:textColor="@color/white"
-            android:textSize="@dimen/_50ssp"
+            android:textSize="@dimen/_40ssp"
             app:layout_constraintBottom_toTopOf="@+id/dateTv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +32,7 @@
 
         <TextView
             android:id="@+id/dateTv"
-            style="@style/mediumText20"
+            style="@style/mediumText16"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"

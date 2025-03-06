@@ -33,6 +33,27 @@ fun Context.scheduleTask(taskItem: TaskItem) {
 
 }
 
+fun Context.scheduleTaskWithoutReminder(taskItem: TaskItem) {
+    val intent = Intent(this, EventAlarmReceiver::class.java).apply {
+        putExtra(Const.TASK_DATA, Gson().toJson(taskItem))
+    }
+
+    val pendingIntent = PendingIntent.getBroadcast(
+        this,
+        taskItem.taskId,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    Log.d(TAG, "scheduleTask: taskId = ${taskItem.taskId}")
+
+    val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    alarmManager.cancel(pendingIntent) // Cancel existing alarm (if any)
+
+    scheduleAlarm(taskItem.startTime, 0, alarmManager, pendingIntent)
+
+}
+
 private fun scheduleAlarm(
     startTime: Long,
     reminderBeforeMeeting: Int,
@@ -48,6 +69,8 @@ private fun scheduleAlarm(
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderTimeInMillis, pendingIntent)
     }
 }
+
+
 
 fun Context.cancelScheduledAlarm(taskId: Int) {
     val intent = Intent(this, EventAlarmReceiver::class.java)
